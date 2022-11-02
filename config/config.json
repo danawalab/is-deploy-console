@@ -1,0 +1,20 @@
+{
+  "serviceList": [
+    {
+      "name": "Ex1",
+      "order": 0
+    },
+    {
+      "name": "Ex2",
+      "order": 1
+    },
+    {
+      "name": "Ex3",
+      "order": 3
+    },
+    {
+      "name": "Ex4",
+      "order": 4
+    }
+  ]
+}

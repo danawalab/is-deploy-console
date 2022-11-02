@@ -1,0 +1,36 @@
+{
+  "server": {
+    "name": "ex1",
+    "nodeList": [
+      {
+        "name": "ex1-node1",
+        "ip": "127.0.0.1",
+        "port": "8080",
+        "podList": [
+          {
+            "name": "ex1-node1-pod1"
+          },
+          {
+            "name": "ex1-node1-pod2"
+          }
+        ]
+      },
+      {
+        "name": "ex1-node2",
+        "ip": "127.0.0.2",
+        "port": "8080",
+        "podList": [
+          {
+            "name": "ex1-node2-pod1"
+          },
+          {
+            "name": "ex1-node2-pod2"
+          },
+          {
+            "name": "ex1-node2-pod3"
+          }
+        ]
+      }
+    ]
+  }
+}

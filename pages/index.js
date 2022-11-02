@@ -1,20 +1,9 @@
 import * as React from 'react';
-import {Box, Grid, Paper, IconButton} from "@mui/material";
-import {styled} from '@mui/material/styles';
+import {Box, Grid, IconButton} from "@mui/material";
 import SettingsIcon from '@mui/icons-material/Settings';
 import Layout from "../components/Layout/Layout";
 import ServiceCard from "../components/ServiceCard";
 import styles from './_index.module.scss'
-
-const Item = styled(Paper)(({theme}) => ({
-    backgroundColor: '#1A2027',
-    border: '1px solid blue',
-    ...theme.typography.body2,
-    padding: theme.spacing(1),
-    textAlign: 'center',
-    color: 'white',
-}));
-
 
 export default function Home() {
     return (
