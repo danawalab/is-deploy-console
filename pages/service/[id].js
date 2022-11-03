@@ -16,8 +16,8 @@ export default function ServiceHome() {
         if (!router.isReady) return;
         rendering(router.query.id);
         import(`../../config/service/${router.query.id}.json`)
-            .then((api) => {
-                setServer(api.server);
+            .then((config) => {
+                setServer(config.node);
             });
     }, [router.isReady]);
 
@@ -34,11 +34,11 @@ export default function ServiceHome() {
                             <SettingsIcon/>
                         </IconButton>
                     </Grid>
-                    {server !== undefined ? server.nodeList.map((service) => (
+                    {server !== undefined ? server.podList.map((service) => (
                         <Grid key={service} item xs={12} md={6} lg={3}>
                             <ServiceCard
                                 header={service.name}
-                                body={service.ip}
+                                body={service.logPath}
                             />
                         </Grid>
                     )) : <></>}
