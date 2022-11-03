@@ -2,19 +2,27 @@
   "serviceList": [
     {
       "name": "Ex1",
-      "order": 0
+      "description": "EX1 서비스 입니다.\n "
     },
     {
       "name": "Ex2",
-      "order": 1
+      "description": "EX2 서비스 입니다.\n "
     },
     {
       "name": "Ex3",
-      "order": 3
+      "description": "EX3 서비스 입니다.\n "
     },
     {
       "name": "Ex4",
-      "order": 4
+      "description": "EX4 서비스 입니다.\n "
+    },
+    {
+      "name": "Ex5",
+      "description": "EX5 서비스 입니다.\n "
+    },
+    {
+      "name": "Ex6",
+      "description": "EX6 서비스 입니다.\n "
     }
   ]
 }

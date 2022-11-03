@@ -9,13 +9,13 @@ export default function ServiceCard({header, body}) {
                 <Card variant="outlined" className={styles.card}>
                     <CardContent>
                         <Typography variant="h5" component="div">
-                            서비스 명: {header}
+                            서비스: {header}
                         </Typography>
                         <Typography sx={{mb: 1.5}} color="text.secondary">
                             online
                         </Typography>
                         <Typography variant="body2">
-                            어쩌고 저쩌구 {body}
+                            {body}
                         </Typography>
                     </CardContent>
                     <CardActions>

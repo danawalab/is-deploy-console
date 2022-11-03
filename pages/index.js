@@ -5,9 +5,12 @@ import Layout from "../components/Layout/Layout";
 import ServiceCard from "../components/ServiceCard";
 import styles from './_index.module.scss'
 
+const JSON = require("../config/config.json");
+const TITLE = "Is Deploy Console";
+
 export default function Home() {
     return (
-        <Layout>
+        <Layout title={TITLE}>
             <Box sx={{flexGrow: 1}}>
                 <Grid container spacing={2}>
                     <Grid item xs={12}>
@@ -15,32 +18,16 @@ export default function Home() {
                             <SettingsIcon/>
                         </IconButton>
                     </Grid>
-                    <Grid item xs={12} md={6}>
-                        <ServiceCard
-                            header={"서비스 A"}
-                            body={"서비스 A 입니다."}
-                        />
-                    </Grid>
-                    <Grid item xs={12} md={6}>
-                        <ServiceCard
-                            header={"서비스 B"}
-                            body={"서비스 B 입니다."}
-                        />
-                    </Grid>
-                    <Grid item xs={12} md={6}>
-                        <ServiceCard
-                            header={"서비스 C"}
-                            body={"서비스 C 입니다."}
-                        />
-                    </Grid>
-                    <Grid item xs={12} md={6}>
-                        <ServiceCard
-                            header={"서비스 D"}
-                            body={"서비스 D 입니다."}
-                        />
-                    </Grid>
+                    {JSON.serviceList.map((service) => (
+                        <Grid key={service} item xs={12} md={6} lg={3}>
+                            <ServiceCard
+                                header={service.name}
+                                body={service.description}
+                            />
+                        </Grid>
+                    ))}
                 </Grid>
             </Box>
         </Layout>
-    )
+    );
 }
