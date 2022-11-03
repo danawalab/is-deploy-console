@@ -7,7 +7,6 @@ import Layout from "../../components/Layout/Layout";
 import ServiceCard from "../../components/ServiceCard";
 import styles from "../_index.module.scss";
 
-
 export default function ServiceHome() {
     const router = useRouter();
     const [id, setId] = useState();
@@ -16,7 +15,7 @@ export default function ServiceHome() {
     useEffect(() => {
         if (!router.isReady) return;
         rendering(router.query.id);
-        const json = import(`../../config/service/${router.query.id}.json`)
+        import(`../../config/service/${router.query.id}.json`)
             .then((api) => {
                 setServer(api.server);
             });
@@ -35,14 +34,14 @@ export default function ServiceHome() {
                             <SettingsIcon/>
                         </IconButton>
                     </Grid>
-                    {server!==undefined?server.nodeList.map((service) => (
+                    {server !== undefined ? server.nodeList.map((service) => (
                         <Grid key={service} item xs={12} md={6} lg={3}>
                             <ServiceCard
                                 header={service.name}
                                 body={service.ip}
                             />
                         </Grid>
-                    )): <></>}
+                    )) : <></>}
                 </Grid>
             </Box>
         </Layout>
