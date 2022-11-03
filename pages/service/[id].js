@@ -27,7 +27,7 @@ export default function ServiceHome() {
 
     return (
         <Layout title={`${id}`}>
-            <Box sx={{flexGrow: 1}}>
+            <Box sx={{flexGrow: 1}} className={styles.body}>
                 <Grid container spacing={2}>
                     <Grid item xs={12}>
                         <IconButton className={styles.iconButton}>

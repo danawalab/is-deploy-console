@@ -11,7 +11,7 @@ const TITLE = "Is Deploy Console";
 export default function Home() {
     return (
         <Layout title={TITLE}>
-            <Box sx={{flexGrow: 1}}>
+            <Box sx={{flexGrow: 1}} className={styles.body}>
                 <Grid container spacing={2}>
                     <Grid item xs={12}>
                         <IconButton className={styles.iconButton}>
