@@ -1,0 +1,12 @@
+{
+  "serviceList": [
+    {
+      "name": "example",
+      "description": "example 서비스 입니다. example 서비스는 각 서비스들의 메트릭과 로그를 수집하여 실시간으로 모니터링을 제공하는 서비스 입니다."
+    },
+    {
+      "name": "message",
+      "description": "message 서비스 입니다. message 서비스는 각 서비스에 통신에 message를 queue로 보냅니다...."
+    }
+  ]
+}
