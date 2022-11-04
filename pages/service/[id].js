@@ -5,7 +5,7 @@ import SettingsIcon from "@mui/icons-material/Settings";
 import {Box, Grid, IconButton} from "@mui/material";
 import Layout from "../../components/Layout/Layout";
 import styles from "../_index.module.scss";
-import ServerCard from "../../components/ServerCard";
+import PodCard from "../../components/Pod/PodCard";
 
 export default function ServiceHome() {
     const router = useRouter();
@@ -15,7 +15,7 @@ export default function ServiceHome() {
     useEffect(() => {
         if (!router.isReady) return;
         rendering(router.query.id);
-        import(`../../config/service/${router.query.id}.json`)
+        import(`../../config/service/${router.query.id}/${router.query.id}.json`)
             .then((config) => {
                 setServer(config);
             });
@@ -36,7 +36,7 @@ export default function ServiceHome() {
                     </Grid>
                     {server !== undefined ? server.node.map((service) => (
                         <Grid key={service} item xs={12} md={6} lg={3}>
-                            <ServerCard
+                            <PodCard
                                 header={service.name}
                                 json={server}
                             />

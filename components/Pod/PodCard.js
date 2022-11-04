@@ -1,8 +1,8 @@
 import {Box, Button, Card, CardActions, CardContent, CardMedia, Divider, Typography} from "@mui/material";
-import styles from "./_serviceCard.module.scss";
+import styles from "../Node/_nodeCard.module.scss";
 import * as React from "react";
 
-export default function ServerCard({header, json}) {
+export default function PodCard({header, json}) {
     return (
         <>
             <Box sx={{minWidth: 275}}>

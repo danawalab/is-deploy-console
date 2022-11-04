@@ -5,24 +5,8 @@
       "description": "example 서비스 입니다. example 서비스는 각 서비스들의 메트릭과 로그를 수집하여 실시간으로 모니터링을 제공하는 서비스 입니다."
     },
     {
-      "name": "Ex2",
-      "description": "EX2 서비스 입니다."
-    },
-    {
-      "name": "Ex3",
-      "description": "EX3 서비스 입니다."
-    },
-    {
-      "name": "Ex4",
-      "description": "EX4 서비스 입니다."
-    },
-    {
-      "name": "Ex5",
-      "description": "EX5 서비스 입니다."
-    },
-    {
-      "name": "Ex6",
-      "description": "EX6 서비스 입니다."
+      "name": "message",
+      "description": "message 서비스 입니다. message 서비스는 각 서비스에 통신에 message를 queue로 보냅니다...."
     }
   ]
 }
