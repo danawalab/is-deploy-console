@@ -4,8 +4,8 @@ import {useRouter} from "next/router";
 import SettingsIcon from "@mui/icons-material/Settings";
 import {Box, Grid, IconButton} from "@mui/material";
 import Layout from "../../components/Layout/Layout";
-import ServiceCard from "../../components/ServiceCard";
 import styles from "../_index.module.scss";
+import ServerCard from "../../components/ServerCard";
 
 export default function ServiceHome() {
     const router = useRouter();
@@ -17,7 +17,7 @@ export default function ServiceHome() {
         rendering(router.query.id);
         import(`../../config/service/${router.query.id}.json`)
             .then((config) => {
-                setServer(config.node);
+                setServer(config);
             });
     }, [router.isReady]);
 
@@ -34,11 +34,11 @@ export default function ServiceHome() {
                             <SettingsIcon/>
                         </IconButton>
                     </Grid>
-                    {server !== undefined ? server.podList.map((service) => (
+                    {server !== undefined ? server.node.map((service) => (
                         <Grid key={service} item xs={12} md={6} lg={3}>
-                            <ServiceCard
+                            <ServerCard
                                 header={service.name}
-                                body={service.logPath}
+                                json={server}
                             />
                         </Grid>
                     )) : <></>}

@@ -21,8 +21,8 @@ export default function Home() {
                     {JSON.serviceList.map((service) => (
                         <Grid key={service} item xs={12} md={6} lg={3}>
                             <ServiceCard
-                                header={service.name}
-                                body={service.description}
+                                serviceName={service.name}
+                                description={service.description}
                             />
                         </Grid>
                     ))}
