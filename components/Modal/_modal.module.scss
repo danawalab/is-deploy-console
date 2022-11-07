@@ -1,0 +1,39 @@
+.modal {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.box {
+  width: 800px;
+  background-color: white;
+  border: 2px solid black;
+  padding: 4px;
+}
+
+.boxArea {
+  margin: 10px;
+}
+
+.textArea {
+  width: 100%;
+  max-width: 100%;
+  min-width: 100%;
+  min-height: 300px;
+  max-height: 650px;
+}
+
+.title {
+  text-align: center;
+  font-weight: bold;
+  font-size: x-large;
+  margin-top: 15px;
+}
+
+.divider {
+  margin: 20px;
+}
+
+.btn {
+
+}
