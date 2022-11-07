@@ -6,7 +6,14 @@ import {router} from "next/router";
 export default function NodeCard({serviceName, description}) {
 
     const push = (serviceName) => {
-        router.push(`/service/${serviceName}`);
+        router.push({
+                pathname: `/service/${serviceName}`,
+                query: {
+                    serviceName,
+                },
+            },
+            `/service/${serviceName}`
+        );
     }
 
     const healthCheck = () => {
