@@ -1,0 +1,12 @@
+{
+  "service": "",
+  "consoleInfo": {
+    "address": ""
+  },
+  "agentInfo": {
+    "name": "",
+    "ip": "",
+    "port": ""
+  },
+  "node": []
+}
