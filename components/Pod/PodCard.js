@@ -67,6 +67,7 @@ export default function PodCard({header, json, index}) {
                                                     variant={"contained"}
                                                     size={"small"}
                                                     color={"success"}
+                                                    className={styles.logBtn}
                                                 >
                                                     로그
                                                 </Button>
