@@ -8,15 +8,14 @@ import JsonModal from "../components/Modal/JsonModal";
 import styles from './_index.module.scss'
 import axios from "axios";
 
-const JSON = require("../config/config.json");
-const TITLE = "Is Deploy Console";
-
 export default function Home({data}) {
     const [open, setOpen] = useState(false);
     const handleOpen = () => setOpen(!open);
+    const json = JSON.parse(data);
+    const title = "Is Deploy Console";
 
     return (
-        <Layout title={TITLE}>
+        <Layout title={title}>
             <Box sx={{flexGrow: 1}} className={styles.body}>
                 <Grid container spacing={2}>
                     <Grid item xs={12}>
@@ -31,9 +30,10 @@ export default function Home({data}) {
                             onClose={handleOpen}
                             config={true}
                             data={data}
+                            id={"config"}
                         />
                     </Grid>
-                    {JSON.serviceList.map((service) => (
+                    {json.serviceList.map((service) => (
                         <Grid key={service} item xs={12} md={6} xl={3}>
                             <NodeCard
                                 serviceName={service.name}

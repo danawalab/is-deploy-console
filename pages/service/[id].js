@@ -19,10 +19,12 @@ export default function ServiceHome({data}) {
     useEffect(() => {
         if (!router.isReady) return;
         rendering(router.query.id);
-        import(`../../config/service/${router.query.id}/${router.query.id}.json`)
-            .then((config) => {
-                setServer(config);
-            });
+        // import(`../../config/service/${router.query.id}/${router.query.id}.json`)
+        //     .then((config) => {
+        //         setServer(config);
+        //     });
+        const json = JSON.parse(data);
+        setServer(json);
     }, [router.isReady]);
 
     const rendering = (id) => {
@@ -45,13 +47,15 @@ export default function ServiceHome({data}) {
                             onClose={handleOpen}
                             config={false}
                             data={data}
+                            id={id}
                         />
                     </Grid>
-                    {server !== undefined ? server.node.map((service) => (
+                    {server !== undefined ? server.node.map((service, index) => (
                         <Grid key={service} item xs={12} md={6} xl={3}>
                             <PodCard
                                 header={service.name}
                                 json={server}
+                                index={index}
                             />
                         </Grid>
                     )) : <></>}

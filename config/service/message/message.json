@@ -80,7 +80,8 @@
           "shPath": "./sample/tomcat2.sh"
         }
       ]
-    }, {
+    },
+    {
       "name": "Message-Node3",
       "ip": "127.0.0.3",
       "port": "8080",
@@ -115,7 +116,8 @@
           "shPath": "./sample/tomcat2.sh"
         }
       ]
-    }, {
+    },
+    {
       "name": "Message-Node4",
       "ip": "127.0.0.4",
       "port": "8080",

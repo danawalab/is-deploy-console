@@ -1,12 +1,26 @@
 import * as React from 'react';
-import {useState} from 'react';
+import {useEffect, useState} from 'react';
 import {Box, Button, Divider, Modal, TextareaAutosize, Typography} from '@mui/material';
 import styles from './_modal.module.scss'
+import axios from "axios";
 
 
-export default function JsonModal({open, onClose, config, data}) {
+export default function JsonModal({open, onClose, config, data, id}) {
     const [textAreaOpen, setTextAreaOpen] = useState(true);
     const handleTextArea = () => setTextAreaOpen(!textAreaOpen);
+    const [json, setJson] = useState();
+    
+    useEffect(() => {
+        setJson(data);
+    }, [data])
+
+    const save = async () => {
+        await axios.put(`http://localhost:3000/api/${id}`, json, {
+            "headers": {
+                "content-type": "application/text",
+            },
+        });
+    }
 
     return (
         <div>
@@ -28,6 +42,7 @@ export default function JsonModal({open, onClose, config, data}) {
                             disabled={textAreaOpen}
                             maxRows={4}
                             defaultValue={data}
+                            onChange={(e) => setJson(e.target.value)}
                         />
                     </Box>
                     <Divider className={styles.divider}/>
@@ -43,6 +58,7 @@ export default function JsonModal({open, onClose, config, data}) {
                         <Button
                             variant={"contained"}
                             color={"primary"}
+                            onClick={save}
                             className={styles.btn}
                         >
                             저장
