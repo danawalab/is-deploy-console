@@ -9,17 +9,33 @@ export default function JsonModal({open, onClose, config, data, id}) {
     const [textAreaOpen, setTextAreaOpen] = useState(true);
     const handleTextArea = () => setTextAreaOpen(!textAreaOpen);
     const [json, setJson] = useState();
-    
+
     useEffect(() => {
         setJson(data);
     }, [data])
 
     const save = async () => {
-        await axios.put(`http://localhost:3000/api/${id}`, json, {
-            "headers": {
-                "content-type": "application/text",
-            },
-        });
+        if (isOpen(textAreaOpen)) {
+            alert("수정");
+        } else {
+            await axios.put(`http://localhost:3000/api/${id}`, json, {
+                "headers": {
+                    "content-type": "application/text",
+                },
+            });
+        }
+    }
+
+    const sync = async () => {
+        if (isOpen(textAreaOpen)) {
+            alert("수정");
+        } else {
+            console.log("sync");
+        }
+    }
+
+    const isOpen = (open) => {
+        return open === false;
     }
 
     return (
@@ -51,7 +67,7 @@ export default function JsonModal({open, onClose, config, data, id}) {
                             variant={"contained"}
                             color={"error"}
                             onClick={handleTextArea}
-                            className={styles.btn}
+                            className={styles.mL}
                         >
                             수정
                         </Button>
@@ -59,7 +75,7 @@ export default function JsonModal({open, onClose, config, data, id}) {
                             variant={"contained"}
                             color={"primary"}
                             onClick={save}
-                            className={styles.btn}
+                            className={styles.mL}
                         >
                             저장
                         </Button>
@@ -67,7 +83,8 @@ export default function JsonModal({open, onClose, config, data, id}) {
                             <Button
                                 variant={"contained"}
                                 color={"success"}
-                                className={styles.btn}
+                                onClick={sync}
+                                className={styles.mL}
                             >
                                 동기화
                             </Button>

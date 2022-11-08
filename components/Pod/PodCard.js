@@ -10,7 +10,10 @@ export default function PodCard({header, json, index}) {
                     <CardContent>
                         <Grid container>
                             <Grid item xs={8} md={8} xl={8}>
-                                <Typography variant="h5" component="div">
+                                <Typography
+                                    variant="h5"
+                                    component="div"
+                                >
                                     서비스: {header}
                                 </Typography>
                             </Grid>
@@ -19,7 +22,7 @@ export default function PodCard({header, json, index}) {
                                     variant={"contained"}
                                     size={"small"}
                                     color={"secondary"}
-                                    className={styles.btn}
+                                    className={styles.mL}
                                 >
                                     복구
                                 </Button>
@@ -27,7 +30,7 @@ export default function PodCard({header, json, index}) {
                                     variant={"contained"}
                                     size={"small"}
                                     color={"warning"}
-                                    className={styles.btn}
+                                    className={styles.mL}
                                 >
                                     에이전트 체크
                                 </Button>
@@ -41,7 +44,7 @@ export default function PodCard({header, json, index}) {
                                 <Grid container>
                                     <Box className={styles.box}>
                                         <Grid container spacing={2}>
-                                            <Grid item xs={12}>
+                                            <Grid item xs={12} className={styles.mL}>
                                                 {pod.name}
                                             </Grid>
                                             <Grid item xs={12}>
@@ -49,6 +52,7 @@ export default function PodCard({header, json, index}) {
                                                     variant={"contained"}
                                                     size={"small"}
                                                     color={"error"}
+                                                    className={styles.mL}
                                                 >
                                                     제거
                                                 </Button>
@@ -58,6 +62,7 @@ export default function PodCard({header, json, index}) {
                                                     variant={"contained"}
                                                     size={"small"}
                                                     color={"primary"}
+                                                    className={styles.mL}
                                                 >
                                                     배포
                                                 </Button>
@@ -67,7 +72,7 @@ export default function PodCard({header, json, index}) {
                                                     variant={"contained"}
                                                     size={"small"}
                                                     color={"success"}
-                                                    className={styles.logBtn}
+                                                    className={`${styles.mB} ${styles.mL}`}
                                                 >
                                                     로그
                                                 </Button>
