@@ -16,7 +16,7 @@ export default function JsonModal({open, onClose, config, data, id}) {
 
     const save = async () => {
         if (isOpen(textAreaOpen)) {
-            alert("수정");
+            alert("수정을 비활성화해주세요.");
         } else {
             await axios.put(`http://localhost:3000/api/${id}`, json, {
                 "headers": {
@@ -28,7 +28,7 @@ export default function JsonModal({open, onClose, config, data, id}) {
 
     const sync = async () => {
         if (isOpen(textAreaOpen)) {
-            alert("수정");
+            alert("수정을 비활성화해주세요.");
         } else {
             console.log("sync");
         }
@@ -36,6 +36,10 @@ export default function JsonModal({open, onClose, config, data, id}) {
 
     const isOpen = (open) => {
         return open === false;
+    }
+
+    if (open === false && textAreaOpen === false) {
+        setTextAreaOpen(true);
     }
 
     return (

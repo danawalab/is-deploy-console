@@ -20,7 +20,6 @@ export default function handler(req, res) {
 
     if (req.method === 'PUT') {
         let json = JSON.stringify(JSON.parse(req.body));
-        let path;
 
         if (req.query['service'] === 'config') {
             path = "./config/config.json"

@@ -3,6 +3,27 @@ import styles from "./_podCard.module.scss";
 import * as React from "react";
 
 export default function PodCard({header, json, index}) {
+
+    const restore = () => {
+        console.log("restore");
+    }
+
+    const healthCheck = () => {
+        console.log("health-check");
+    }
+
+    const exclude = () => {
+        console.log("exclude");
+    }
+
+    const deploy = () => {
+        console.log("deploy");
+    }
+
+    const log = () => {
+        console.log("log");
+    }
+
     return (
         <>
             <Box sx={{minWidth: 275}}>
@@ -22,6 +43,7 @@ export default function PodCard({header, json, index}) {
                                     variant={"contained"}
                                     size={"small"}
                                     color={"secondary"}
+                                    onClick={restore}
                                     className={styles.mL}
                                 >
                                     복구
@@ -30,6 +52,7 @@ export default function PodCard({header, json, index}) {
                                     variant={"contained"}
                                     size={"small"}
                                     color={"warning"}
+                                    onClick={healthCheck}
                                     className={styles.mL}
                                 >
                                     에이전트 체크
@@ -52,6 +75,7 @@ export default function PodCard({header, json, index}) {
                                                     variant={"contained"}
                                                     size={"small"}
                                                     color={"error"}
+                                                    onClick={exclude}
                                                     className={styles.mL}
                                                 >
                                                     제거
@@ -62,6 +86,7 @@ export default function PodCard({header, json, index}) {
                                                     variant={"contained"}
                                                     size={"small"}
                                                     color={"primary"}
+                                                    onClick={deploy}
                                                     className={styles.mL}
                                                 >
                                                     배포
@@ -72,6 +97,7 @@ export default function PodCard({header, json, index}) {
                                                     variant={"contained"}
                                                     size={"small"}
                                                     color={"success"}
+                                                    onClick={log}
                                                     className={`${styles.mB} ${styles.mL}`}
                                                 >
                                                     로그

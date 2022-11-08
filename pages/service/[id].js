@@ -22,7 +22,7 @@ export default function ServiceHome({data}) {
         rendering(router.query.id);
         const json = JSON.parse(data);
         setServer(json);
-    }, [router.isReady]);
+    }, [data, router.isReady, router.query.id]);
 
     const rendering = (id) => {
         setId(id);
