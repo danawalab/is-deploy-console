@@ -2,15 +2,18 @@ import {Box, Button, Card, CardActions, CardContent, CardMedia, Divider, Typogra
 import Grid from '@mui/material/Unstable_Grid2'
 import styles from "./_podCard.module.scss";
 import * as React from "react";
+import axios from "axios";
+
+const API = 'http://localhost:3000/api/agent/'
 
 const CardHeader = ({header}) => {
 
-    const restore = () => {
-        console.log("restore");
+    const restore = async () => {
+        await axios.get(API + '/restore');
     }
 
-    const healthCheck = () => {
-        console.log("health-check");
+    const healthCheck = async () => {
+        await axios.get(API + '/health');
     }
 
     return (
@@ -49,17 +52,28 @@ const CardHeader = ({header}) => {
 
 const CardBody = ({json, index}) => {
 
-    const exclude = () => {
-        console.log("exclude");
-
+    const exclude = async (podName) => {
+        await axios.post(API + '/exclude', podName, {
+            "headers": {
+                "content-type": "application/text",
+            },
+        });
     }
 
-    const deploy = () => {
-        console.log("deploy");
+    const deploy = async (podName) => {
+        await axios.post(API + '/deploy', podName, {
+            "headers": {
+                "content-type": "application/text",
+            },
+        });
     }
 
-    const log = () => {
-        console.log("log");
+    const log = async (podName) => {
+        await axios.post(API + '/log', podName, {
+            "headers": {
+                "content-type": "application/text",
+            },
+        });
     }
 
     return (
@@ -77,7 +91,7 @@ const CardBody = ({json, index}) => {
                                         variant={"contained"}
                                         size={"small"}
                                         color={"error"}
-                                        onClick={exclude}
+                                        onClick={() => exclude(pod.name)}
                                         className={styles.mL}
                                     >
                                         Exclude
@@ -88,7 +102,7 @@ const CardBody = ({json, index}) => {
                                         variant={"contained"}
                                         size={"small"}
                                         color={"primary"}
-                                        onClick={deploy}
+                                        onClick={() => deploy(pod.name)}
                                         className={styles.mL}
                                     >
                                         Deploy
@@ -99,7 +113,7 @@ const CardBody = ({json, index}) => {
                                         variant={"contained"}
                                         size={"small"}
                                         color={"success"}
-                                        onClick={log}
+                                        onClick={() => log(pod.name)}
                                         className={styles.mL}
                                     >
                                         Log

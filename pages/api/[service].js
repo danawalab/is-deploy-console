@@ -23,7 +23,7 @@ export default function handler(req, res) {
      * 수정된 json 값을 받아 json 파일을 덮어 쓴다.
      */
     if (isMethodPut(req)) {
-        let json = JSON.stringify(JSON.parse(req.body));
+        let json = JSON.stringify(JSON.parse(req.body),null, 2);
 
         path = isQueryConfig(req) ?
             './config/config.json' :
@@ -36,7 +36,7 @@ export default function handler(req, res) {
      * init.json을 만든다.
      */
     if (isMethodPost(req)) {
-        let json = JSON.stringify(JSON.parse(req.body));
+        let json = JSON.stringify(JSON.parse(req.body), null, 2);
         path = './config/service/init.json';
 
         fs.writeFileSync(path, json, 'utf-8');
