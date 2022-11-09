@@ -63,10 +63,11 @@ const CardBody = ({json, index}) => {
     }
 
     return (
-        <Grid container>
+        // <Grid container>
+        <>
             {json.node.map((node, idx) => (
                 idx === index ? node.podList.map((pod) => (
-                    <Grid xs={12} md={6} xl={6}>
+                    // <Grid xs={12} md={6} xl={6}>
                         <Box className={styles.box}>
                             <Grid container>
                                 <Grid xs={12} className={styles.mL}>
@@ -107,14 +108,15 @@ const CardBody = ({json, index}) => {
                                 </Grid>
                             </Grid>
                         </Box>
-                    </Grid>
+                    // </Grid>
                 )) : <></>
             ))}
-        </Grid>
+        {/*</Grid>*/}
+        </>
     );
 }
 
-export default function PodCard({header, json, index}) {
+export default function PodCard2({header, json, index}) {
     return (
         <>
             <Box sx={{minWidth: 275}}>
@@ -125,12 +127,12 @@ export default function PodCard({header, json, index}) {
                         />
                     </CardContent>
                     <Divider/>
-                    <CardContent>
+                    <CardActions>
                         <CardBody
                             json={json}
                             index={index}
                         />
-                    </CardContent>
+                    </CardActions>
                 </Card>
             </Box>
         </>

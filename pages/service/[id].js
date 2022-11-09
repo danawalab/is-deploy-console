@@ -9,6 +9,7 @@ import JsonModal from "../../components/Modal/JsonModal";
 import LogArea from "../../components/Pod/LogArea";
 import axios from "axios";
 import styles from "../_index.module.scss";
+import PodCard2 from "../../components/Pod/PodCard2";
 
 export default function ServiceHome({data}) {
     const router = useRouter();
@@ -48,7 +49,7 @@ export default function ServiceHome({data}) {
                         />
                     </Grid>
                     {server !== undefined ? server.node.map((service, index) => (
-                        <Grid key={service} item xs={12} md={6} xl={3}>
+                        <Grid key={service} item xs={12} md={6} xl={6}>
                             <PodCard
                                 header={service.name}
                                 json={server}

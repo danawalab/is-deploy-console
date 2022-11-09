@@ -18,7 +18,7 @@ export default function LogArea() {
                     color={"success"}
                     className={styles.btn}
                 >
-                    초기화
+                    Init
                 </Button>
             </Grid>
         </Grid>
