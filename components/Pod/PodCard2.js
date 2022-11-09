@@ -2,18 +2,15 @@ import {Box, Button, Card, CardActions, CardContent, CardMedia, Divider, Typogra
 import Grid from '@mui/material/Unstable_Grid2'
 import styles from "./_podCard.module.scss";
 import * as React from "react";
-import axios from "axios";
-
-const API = 'http://localhost:3000/api/agent/'
 
 const CardHeader = ({header}) => {
 
-    const restore = async () => {
-        await axios.get(API + '/restore');
+    const restore = () => {
+        console.log("restore");
     }
 
-    const healthCheck = async () => {
-        await axios.get(API + '/health');
+    const healthCheck = () => {
+        console.log("health-check");
     }
 
     return (
@@ -52,35 +49,25 @@ const CardHeader = ({header}) => {
 
 const CardBody = ({json, index}) => {
 
-    const exclude = async (podName) => {
-        await axios.post(API + '/exclude', podName, {
-            "headers": {
-                "content-type": "application/text",
-            },
-        });
+    const exclude = () => {
+        console.log("exclude");
+
     }
 
-    const deploy = async (podName) => {
-        await axios.post(API + '/deploy', podName, {
-            "headers": {
-                "content-type": "application/text",
-            },
-        });
+    const deploy = () => {
+        console.log("deploy");
     }
 
-    const log = async (podName) => {
-        await axios.post(API + '/log', podName, {
-            "headers": {
-                "content-type": "application/text",
-            },
-        });
+    const log = () => {
+        console.log("log");
     }
 
     return (
-        <Grid container>
+        // <Grid container>
+        <>
             {json.node.map((node, idx) => (
                 idx === index ? node.podList.map((pod) => (
-                    <Grid xs={12} md={6} xl={6}>
+                    // <Grid xs={12} md={6} xl={6}>
                         <Box className={styles.box}>
                             <Grid container>
                                 <Grid xs={12} className={styles.mL}>
@@ -91,7 +78,7 @@ const CardBody = ({json, index}) => {
                                         variant={"contained"}
                                         size={"small"}
                                         color={"error"}
-                                        onClick={() => exclude(pod.name)}
+                                        onClick={exclude}
                                         className={styles.mL}
                                     >
                                         Exclude
@@ -102,7 +89,7 @@ const CardBody = ({json, index}) => {
                                         variant={"contained"}
                                         size={"small"}
                                         color={"primary"}
-                                        onClick={() => deploy(pod.name)}
+                                        onClick={deploy}
                                         className={styles.mL}
                                     >
                                         Deploy
@@ -113,7 +100,7 @@ const CardBody = ({json, index}) => {
                                         variant={"contained"}
                                         size={"small"}
                                         color={"success"}
-                                        onClick={() => log(pod.name)}
+                                        onClick={log}
                                         className={styles.mL}
                                     >
                                         Log
@@ -121,14 +108,15 @@ const CardBody = ({json, index}) => {
                                 </Grid>
                             </Grid>
                         </Box>
-                    </Grid>
+                    // </Grid>
                 )) : <></>
             ))}
-        </Grid>
+        {/*</Grid>*/}
+        </>
     );
 }
 
-export default function PodCard({header, json, index}) {
+export default function PodCard2({header, json, index}) {
     return (
         <>
             <Box sx={{minWidth: 275}}>
@@ -139,12 +127,12 @@ export default function PodCard({header, json, index}) {
                         />
                     </CardContent>
                     <Divider/>
-                    <CardContent>
+                    <CardActions>
                         <CardBody
                             json={json}
                             index={index}
                         />
-                    </CardContent>
+                    </CardActions>
                 </Card>
             </Box>
         </>

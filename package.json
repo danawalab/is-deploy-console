@@ -1,6 +1,6 @@
 {
   "name": "is-deploy-console",
-  "version": "1.0.0-m1",
+  "version": "1.0.0-m3",
   "private": true,
   "scripts": {
     "dev": "next dev",

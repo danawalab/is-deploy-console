@@ -2,12 +2,14 @@ import * as React from "react";
 import {useEffect, useState} from "react";
 import {useRouter} from "next/router";
 import SettingsIcon from "@mui/icons-material/Settings";
-import {Box, Grid, IconButton} from "@mui/material";
+import {Box, Divider, Grid, IconButton} from "@mui/material";
 import Layout from "../../components/Layout/Layout";
-import styles from "../_index.module.scss";
 import PodCard from "../../components/Pod/PodCard";
 import JsonModal from "../../components/Modal/JsonModal";
+import LogArea from "../../components/Pod/LogArea";
 import axios from "axios";
+import styles from "../_index.module.scss";
+import PodCard2 from "../../components/Pod/PodCard2";
 
 export default function ServiceHome({data}) {
     const router = useRouter();
@@ -19,11 +21,9 @@ export default function ServiceHome({data}) {
     useEffect(() => {
         if (!router.isReady) return;
         rendering(router.query.id);
-        import(`../../config/service/${router.query.id}/${router.query.id}.json`)
-            .then((config) => {
-                setServer(config);
-            });
-    }, [router.isReady]);
+        const json = JSON.parse(data);
+        setServer(json);
+    }, [data, router.isReady, router.query.id]);
 
     const rendering = (id) => {
         setId(id);
@@ -32,7 +32,7 @@ export default function ServiceHome({data}) {
     return (
         <Layout title={id}>
             <Box sx={{flexGrow: 1}} className={styles.body}>
-                <Grid container spacing={2}>
+                <Grid container spacing={2} className={styles.serviceGrid}>
                     <Grid item xs={12}>
                         <IconButton
                             className={styles.iconButton}
@@ -45,17 +45,21 @@ export default function ServiceHome({data}) {
                             onClose={handleOpen}
                             config={false}
                             data={data}
+                            id={id}
                         />
                     </Grid>
-                    {server !== undefined ? server.node.map((service) => (
-                        <Grid key={service} item xs={12} md={6} xl={3}>
+                    {server !== undefined ? server.node.map((service, index) => (
+                        <Grid key={service} item xs={12} md={6} xl={6}>
                             <PodCard
                                 header={service.name}
                                 json={server}
+                                index={index}
                             />
                         </Grid>
                     )) : <></>}
                 </Grid>
+                <Divider/>
+                <LogArea/>
             </Box>
         </Layout>
     );
