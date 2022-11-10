@@ -6,7 +6,7 @@
     },
     {
       "name": "message",
-      "description": "message 서비스 입니다. message 서비스는 각 서비스에 통신에 message를 queue로 보냅니다...."
+      "description": "Message 서비스 입니다. Message 서비스는 각 서비스에 통신에 Message를 Queue로 보냅니다...."
     },
     {
       "name": "Test",

@@ -5,7 +5,7 @@ import styles from './_modal.module.scss'
 import axios from "axios";
 
 
-export default function JsonModal({open, onClose, config, data, id}) {
+export default function JsonModal({open, onClose, data, id}) {
     const [textAreaOpen, setTextAreaOpen] = useState(true);
     const handleTextArea = () => setTextAreaOpen(!textAreaOpen);
     const [json, setJson] = useState();
@@ -24,7 +24,7 @@ export default function JsonModal({open, onClose, config, data, id}) {
             alert("수정을 비활성화해주세요.");
         } else {
             // axios는 값을 object 형태로 감싸서 서버로 보내기에 content-type을 text로 지정해 그대로 넘기게 변경
-            await axios.put(`http://localhost:3000/api/${id}`, json, {
+            await axios.put(`http://localhost:3000/api/${id.toLowerCase()}`, json, {
                 "headers": {
                     "content-type": "application/text",
                 },
@@ -64,7 +64,7 @@ export default function JsonModal({open, onClose, config, data, id}) {
             "node": []
         }
 
-        await axios.post("http://localhost:3000/api/${id}", init, {
+        await axios.post(`http://localhost:3000/api/${id.toLowerCase()}`, init, {
             "headers": {
                 "content-type": "application/text",
             },
@@ -120,7 +120,7 @@ export default function JsonModal({open, onClose, config, data, id}) {
                         >
                             저장
                         </Button>
-                        {config === false ? (
+                        {id !== 'config' ? (
                             <Button
                                 variant={"contained"}
                                 color={"success"}

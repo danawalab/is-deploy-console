@@ -28,9 +28,8 @@ export default function Home({data}) {
                         <JsonModal
                             open={open}
                             onClose={handleOpen}
-                            config={true}
                             data={data}
-                            id={"config"}
+                            id={'config'}
                         />
                     </Grid>
                     {json.serviceList.map((service) => (

@@ -1,21 +1,19 @@
 import fs from 'fs';
 
 export default function handler(req, res) {
-    let path;
+    /**
+     * req.query['service'] 가 config면 './config/config.json'
+     * 아닐 경우 동적으로 경로가 지정된다 `./config/service/${req.query['service']}/${req.query['service']}.json`
+     * @type {string|string}
+     */
+    let path = isQueryConfig(req) ?
+        './config/config.json' :
+        `./config/service/${req.query['service']}/${req.query['service']}.json`;
 
     /**
      * json을 읽어 반환한다.
      */
     if (isMethodGet(req)) {
-        /**
-         * req.query['service'] 가 config면 './config/config.json'
-         * 아닐 경우 동적으로 경로가 지정된다 `./config/service/${req.query['service']}/${req.query['service']}.json`
-         * @type {string|string}
-         */
-        path = isQueryConfig(req) ?
-            './config/config.json' :
-            `./config/service/${req.query['service']}/${req.query['service']}.json`;
-
         fileRead(path);
     }
 
@@ -24,11 +22,6 @@ export default function handler(req, res) {
      */
     if (isMethodPut(req)) {
         let json = JSON.stringify(JSON.parse(req.body),null, 2);
-
-        path = isQueryConfig(req) ?
-            './config/config.json' :
-            `./config/service/${req.query['service']}/${req.query['service']}.json`;
-
         fs.writeFileSync(path, json, 'utf-8');
     }
 
@@ -38,7 +31,6 @@ export default function handler(req, res) {
     if (isMethodPost(req)) {
         let json = JSON.stringify(JSON.parse(req.body), null, 2);
         path = './config/service/init.json';
-
         fs.writeFileSync(path, json, 'utf-8');
     }
 
