@@ -6,6 +6,7 @@ import Layout from "../../components/Layout/Layout";
 import PodCard from "../../components/Pod/PodCard";
 import JsonModal from "../../components/Modal/JsonModal";
 import LogArea from "../../components/Pod/LogArea";
+import Init from "../../components/Layout/Init";
 import axios from "axios";
 import styles from "../_index.module.scss";
 
@@ -13,6 +14,7 @@ export default function ServiceHome({data}) {
     const [open, setOpen] = useState(false);
     const handleOpen = () => setOpen(!open);
     const json = JSON.parse(data);
+    const nodeLength = json.node.length;
 
     return (
         <Layout title={json.service}>
@@ -32,15 +34,15 @@ export default function ServiceHome({data}) {
                             id={json.service}
                         />
                     </Grid>
-                    {json.node.map((node, index) => (
+                    {nodeLength !== 0 ? json.node.map((node, index) => (
                         <Grid key={node} item xs={12} md={6} xl={6}>
                             <PodCard
-                                header={node.name}
+                                nodeName={node.name}
                                 json={json}
                                 index={index}
                             />
                         </Grid>
-                    ))}
+                    )): <Init/>}
                 </Grid>
                 <Divider/>
                 <LogArea/>

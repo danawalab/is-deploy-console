@@ -30,7 +30,7 @@ export default function NodeCard({serviceName, description}) {
                     </CardContent>
                     <Divider/>
                     <CardActions>
-                        <Button size="small" onClick={() => push(serviceName)}>자세히 보기</Button>
+                        <Button size="small" onClick={() => push(serviceName.toLowerCase())}>자세히 보기</Button>
                     </CardActions>
                 </Card>
             </Box>

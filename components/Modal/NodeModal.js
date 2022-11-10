@@ -1,35 +1,31 @@
-import * as React from 'react';
-import {useEffect, useState} from 'react';
-import {Box, Button, Divider, Modal, TextareaAutosize, Typography} from '@mui/material';
-import styles from './_modal.module.scss'
+import {Box, Button, Divider, Modal, TextareaAutosize, Typography} from "@mui/material";
+import styles from "./_modal.module.scss";
+import * as React from "react";
+import {useState} from "react";
 import axios from "axios";
 
-
-export default function JsonModal({open, onClose, data, id}) {
+export default function NodeModal({open, onClose, service, nodeName}) {
     const [textAreaOpen, setTextAreaOpen] = useState(true);
     const handleTextArea = () => setTextAreaOpen(!textAreaOpen);
     const [json, setJson] = useState();
-    const API = `http://localhost:3000/api/${id.toLowerCase()}`;
+    const API = 'http://localhost:3000/api/agent/sync';
 
-    useEffect(() => {
-        setJson(data);
-    }, [data])
-
-    /**
-     * 수정한 json을 저장한다.
-     * 만약 수정 버튼이 활성화돼있다면 alert를 통해 수정 버튼을 비활성화 유도한다.
-     * @returns {Promise<void>}
-     */
-    const save = async () => {
+    const getJson = async () => {
         if (isOpen(textAreaOpen)) {
             alert("수정을 비활성화해주세요.");
         } else {
-            // axios는 값을 object 형태로 감싸서 서버로 보내기에 content-type을 text로 지정해 그대로 넘기게 변경
-            await axios.put(API, json, {
-                "headers": {
-                    "content-type": "application/text",
-                },
-            });
+            await axios.get(API + `?service=${service}&node=${nodeName}`)
+                .then((resp) => {
+                    setJson(JSON.stringify(resp.data, null, 2));
+                });
+        }
+    }
+
+    const sync = async () => {
+        if (isOpen(textAreaOpen)) {
+            alert("수정을 비활성화해주세요.");
+        } else {
+            await axios.put(API, json)
         }
     }
 
@@ -61,7 +57,7 @@ export default function JsonModal({open, onClose, data, id}) {
                             className={styles.textArea}
                             disabled={textAreaOpen}
                             minRows={4}
-                            defaultValue={data}
+                            value={json}
                             onChange={(e) => setJson(e.target.value)}
                         />
                     </Box>
@@ -78,14 +74,23 @@ export default function JsonModal({open, onClose, data, id}) {
                         <Button
                             variant={"contained"}
                             color={"primary"}
-                            onClick={save}
+                            onClick={getJson}
                             className={styles.mL}
                         >
-                            저장
+                            json 불러오기
+                        </Button>
+                        <Button
+                            variant={"contained"}
+                            color={"success"}
+                            onClick={sync}
+                            className={styles.mL}
+                        >
+                            동기화
                         </Button>
                     </Box>
                 </Box>
             </Modal>
         </div>
     );
+
 }
