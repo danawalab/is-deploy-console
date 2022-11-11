@@ -1,44 +1,75 @@
 import axios from "axios";
+import fs from "fs";
 
 export default function handler(req, res) {
+    const SERVICE = req.query.service;
+    const NODE = req.query.node;
+    const POD = req.query.pod;
+    const PATH = `./config/service/${SERVICE}/${SERVICE}.json`;
 
-    if (req.query['agent'] === 'health') {
-        const health = axios.get('http://localhost:5000/health-check')
-            .then((resp) => {
-                console.log(resp.data);
-                return res.status(200).json(resp.data);
-            });
-    }
+    fs.readFile(PATH, 'utf-8', (err, data) => {
+        if (err !== null) {
+            console.error(err);
+        } else {
+            let agent = JSON.parse(data).node
+                .filter(nodes => nodes.name === NODE)
+                .reduce(nodes => nodes.agent);
+            const API = `http://${agent.agent.host}:${agent.agent.port}`;
 
-    if (req.query['agent'] === 'restore') {
-        const restore = axios.put('http://localhost:5000/load-balance/restore')
-            .then((resp) => {
-                console.log(resp.data);
-                return res.status(200).json(resp.data);
-            });
-    }
-
-    if (req.query['agent'] === 'exclude') {
-        const restore = axios.put(`http://localhost:5000/load-balance/exclude?worker=${req.body}`)
-            .then((resp) => {
-                console.log(resp.data);
-                return res.status(200).json(resp.data);
-            });
-    }
-
-    if (req.query['agent'] === 'deploy') {
-        const restore = axios.put(`http://localhost:5000/webapp/deploy?worker=${req.body}`)
-            .then((resp) => {
-                console.log(resp.data);
-                return res.status(200).json(resp.data);
-            });
-    }
-
-    if (req.query['agent'] === 'log') {
-        const restore = axios.get(`http://localhost:5000/logs/tail/n?worker=${req.body}&line=100`)
-            .then((resp) => {
-                console.log(resp.data);
-                return res.status(200).json(resp.data);
-            });
-    }
+            switch (req.query.agent) {
+                case 'health':
+                    axios.get(API + '/health-check')
+                        .then((resp) => {
+                            console.log(resp.data);
+                            return res.status(200).json(resp.data);
+                        });
+                    break;
+                case 'restore' :
+                    axios.put(API + '/load-balance/restore')
+                        .then((resp) => {
+                            console.log(resp.data);
+                            return res.status(200).json(resp.data);
+                        });
+                    break;
+                case 'exclude':
+                    axios.put(API + `/load-balance/exclude?worker=${POD}`)
+                        .then((resp) => {
+                            console.log(resp.data);
+                            return res.status(200).json(resp.data);
+                        });
+                    break;
+                case 'deploy':
+                    axios.put(API + `/webapp/deploy?worker=${POD}`)
+                        .then((resp) => {
+                            console.log(resp.data);
+                            return res.status(200).json(resp.data);
+                        });
+                    break;
+                case 'log':
+                    axios.get(API + `/logs/tail/n?worker=${POD}&line=100`)
+                        .then((resp) => {
+                            console.log(resp.data);
+                            return res.status(200).json(resp.data);
+                        });
+                    break;
+                case 'sync':
+                    switch (req.method) {
+                        case 'GET':
+                            axios.get(API + `/sync`)
+                                .then((resp) => {
+                                    return res.status(200).json(resp.data.data);
+                                });
+                            break;
+                        case 'PUT':
+                            axios.put(API + `/sync`, req.body.data
+                            )
+                                .then((resp) => {
+                                    return res.status(200).json(resp.data);
+                                });
+                            break;
+                    }
+                    break;
+            }
+        }
+    });
 }

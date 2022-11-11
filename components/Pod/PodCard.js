@@ -1,19 +1,24 @@
-import {Box, Button, Card, CardActions, CardContent, CardMedia, Divider, Typography} from "@mui/material";
+import {Box, Button, Card, CardContent, Divider, IconButton, Typography} from "@mui/material";
 import Grid from '@mui/material/Unstable_Grid2'
 import styles from "./_podCard.module.scss";
 import * as React from "react";
+import {useState} from "react";
 import axios from "axios";
+import SettingsIcon from "@mui/icons-material/Settings";
+import NodeModal from "../Modal/NodeModal";
 
 const API = 'http://localhost:3000/api/agent/'
 
-const CardHeader = ({header}) => {
+const CardHeader = ({nodeName, json}) => {
+    const [open, setOpen] = useState(false);
+    const handleOpen = () => setOpen(!open);
 
     const restore = async () => {
-        await axios.get(API + '/restore');
+        await axios.get(API + `/restore?service=${json.service}&node=${nodeName}`);
     }
 
     const healthCheck = async () => {
-        await axios.get(API + '/health');
+        await axios.get(API + `/health?service=${json.service}&node=${nodeName}`);
     }
 
     return (
@@ -23,10 +28,22 @@ const CardHeader = ({header}) => {
                     variant="h5"
                     component="div"
                 >
-                    {header}
+                    {nodeName}
                 </Typography>
             </Grid>
             <Grid xs={6} md={4} xl={4}>
+                <IconButton
+                    className={styles.iconButton}
+                    onClick={handleOpen}
+                >
+                    <SettingsIcon/>
+                </IconButton>
+                <NodeModal
+                    open={open}
+                    onClose={handleOpen}
+                    service={json.service}
+                    nodeName={nodeName}
+                />
                 <Button
                     variant={"contained"}
                     size={"small"}
@@ -50,30 +67,20 @@ const CardHeader = ({header}) => {
     );
 }
 
-const CardBody = ({json, index}) => {
+const CardBody = ({json, nodeName, index}) => {
 
-    const exclude = async (podName) => {
-        await axios.post(API + '/exclude', podName, {
-            "headers": {
-                "content-type": "application/text",
-            },
-        });
+    const QUERY = `?service=${json.service}&node=${nodeName}`
+
+    const exclude = async (pod) => {
+        await axios.post(API + '/exclude' + QUERY + `&pod=${pod}`);
     }
 
-    const deploy = async (podName) => {
-        await axios.post(API + '/deploy', podName, {
-            "headers": {
-                "content-type": "application/text",
-            },
-        });
+    const deploy = async (pod) => {
+        await axios.post(API + '/deploy' + QUERY + `&pod=${pod}`);
     }
 
-    const log = async (podName) => {
-        await axios.post(API + '/log', podName, {
-            "headers": {
-                "content-type": "application/text",
-            },
-        });
+    const log = async (pod) => {
+        await axios.post(API + '/log' + QUERY + `&pod=${pod}`);
     }
 
     return (
@@ -128,20 +135,22 @@ const CardBody = ({json, index}) => {
     );
 }
 
-export default function PodCard({header, json, index}) {
+export default function PodCard({nodeName, json, index}) {
     return (
         <>
             <Box sx={{minWidth: 275}}>
                 <Card variant="outlined" className={styles.card}>
                     <CardContent>
                         <CardHeader
-                            header={header}
+                            nodeName={nodeName}
+                            json={json}
                         />
                     </CardContent>
                     <Divider/>
                     <CardContent>
                         <CardBody
                             json={json}
+                            nodeName={nodeName}
                             index={index}
                         />
                     </CardContent>
