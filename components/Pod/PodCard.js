@@ -69,22 +69,18 @@ const CardHeader = ({nodeName, json}) => {
 
 const CardBody = ({json, nodeName, index}) => {
 
-    const exclude = async (podName) => {
-        await axios.post(API + `/exclude?service=${json.service}&node=${nodeName}`, {
-            podName: podName
-        });
+    const QUERY = `?service=${json.service}&node=${nodeName}`
+
+    const exclude = async (pod) => {
+        await axios.post(API + '/exclude' + QUERY + `&pod=${pod}`);
     }
 
-    const deploy = async (podName) => {
-        await axios.post(API + `/deploy?service=${json.service}&node=${nodeName}`,{
-            podName: podName
-        });
+    const deploy = async (pod) => {
+        await axios.post(API + '/deploy' + QUERY + `&pod=${pod}`);
     }
 
-    const log = async (podName) => {
-        await axios.post(API + `/log?service=${json.service}&node=${nodeName}`, {
-            podName: podName
-        });
+    const log = async (pod) => {
+        await axios.post(API + '/log' + QUERY + `&pod=${pod}`);
     }
 
     return (

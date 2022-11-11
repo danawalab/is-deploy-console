@@ -8,24 +8,34 @@ export default function NodeModal({open, onClose, service, nodeName}) {
     const [textAreaOpen, setTextAreaOpen] = useState(true);
     const handleTextArea = () => setTextAreaOpen(!textAreaOpen);
     const [json, setJson] = useState();
-    const API = 'http://localhost:3000/api/agent/sync';
+    const API = `http://localhost:3000/api/agent/sync?service=${service}&node=${nodeName}`;
 
+    /**
+     * agent로 부터 setting.json을 불러온다
+     * @returns {Promise<void>}
+     */
     const getJson = async () => {
         if (isOpen(textAreaOpen)) {
             alert("수정을 비활성화해주세요.");
         } else {
-            await axios.get(API + `?service=${service}&node=${nodeName}`)
+            await axios.get(API)
                 .then((resp) => {
                     setJson(JSON.stringify(resp.data, null, 2));
                 });
         }
     }
 
+    /**
+     * agent에게 변경된 setting.json 정보를 보내 동기화 시킨다
+     * @returns {Promise<void>}
+     */
     const sync = async () => {
         if (isOpen(textAreaOpen)) {
             alert("수정을 비활성화해주세요.");
         } else {
-            await axios.put(API, json)
+            await axios.put(API, {
+                data: json
+            });
         }
     }
 
