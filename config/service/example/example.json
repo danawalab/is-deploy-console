@@ -10,13 +10,16 @@
       "podList": [
         {
           "name": "Example-Node1-Pod1"
+        },
+        {
+          "name": "Example-Node1-Pod2"
         }
       ]
     },
     {
       "name": "Example-Node2",
       "agent": {
-        "host" : "127.0.0.2",
+        "host" : "localhost",
         "port": "5000"
       },
       "podList": [
@@ -25,45 +28,6 @@
         },
         {
           "name": "Example-Node2-Pod2"
-        }
-      ]
-    },
-    {
-      "name": "Example-Node3",
-      "agent": {
-        "host" : "127.0.0.3",
-        "port": "5000"
-      },
-      "podList": [
-        {
-          "name": "Example-Node3-Pod1"
-        },
-        {
-          "name": "Example-Node3-Pod2"
-        },
-        {
-          "name": "Example-Node3-Pod3"
-        }
-      ]
-    },
-    {
-      "name": "Example-Node4",
-      "agent": {
-        "host" : "127.0.0.4",
-        "port": "5000"
-      },
-      "podList": [
-        {
-          "name": "Example-Node4-Pod1"
-        },
-        {
-          "name": "Example-Node4-Pod2"
-        },
-        {
-          "name": "Example-Node4-Pod3"
-        },
-        {
-          "name": "Example-Node4-Pod4"
         }
       ]
     }

@@ -2,15 +2,7 @@
   "serviceList": [
     {
       "name": "Example",
-      "description": "example 서비스 입니다. example 서비스는 각 서비스들의 메트릭과 로그를 수집하여 실시간으로 모니터링을 제공하는 서비스 입니다."
-    },
-    {
-      "name": "Message",
-      "description": "Message 서비스 입니다. Message 서비스는 각 서비스에 통신에 Message를 Queue로 보냅니다...."
-    },
-    {
-      "name": "Test",
-      "description": "test 용"
+      "description": "Example 서비스 입니다."
     }
   ]
 }
