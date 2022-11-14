@@ -18,7 +18,6 @@ export default function handler(req, res) {
 
             switch (req.query.agent) {
                 case 'health':
-
                     axios.get(API + '/health-check')
                         .then((resp) => {
                             return res.status(200).json(resp.data);
