@@ -1,33 +1,30 @@
 import Layout from "../../../components/Layout/Layout";
 import LogArea from "../../../components/Log/LogArea";
-import {useEffect, useState} from "react";
-import {useRouter} from "next/router";
+import axios from "axios";
 
-export default function PodLog() {
-    const router = useRouter();
-    const [podName, setPodName] = useState();
-
-    console.log(router)
-    console.log(router.query.service)
-    console.log(router.query.node)
-    console.log(router.query.pod)
-
-    useEffect(() => {
-        if (!router.isReady) return;
-        rendering(router.query.pod);
-    }, [router.isReady])
-
-    const rendering = (podName) => {
-        setPodName(podName);
-    }
+export default function PodLog({data}) {
+    const service = data.service;
+    const node = data.node;
+    const pod = data.pod;
 
     return (
-        <Layout title={podName}>
+        <Layout title={pod}>
             <LogArea
-                service={router.query.service}
-                node={router.query.node}
-                pod={router.query.pod}
+                service={service}
+                node={node}
+                pod={pod}
             />
         </Layout>
     );
+}
+
+export async function getServerSideProps({query}) {
+    const {service, node, pod} = query;
+    const res = await axios.get(`http://localhost:3000/api/log?service=${service}&node=${node}&pod=${pod}`);
+    const data = await res.data;
+    return {
+        props: {
+            data
+        }
+    }
 }

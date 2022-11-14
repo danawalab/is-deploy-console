@@ -3,10 +3,6 @@
     {
       "name": "Example",
       "description": "Example 서비스 입니다."
-    },
-    {
-      "name": "Test",
-      "description": "Test 서비스"
     }
   ]
 }

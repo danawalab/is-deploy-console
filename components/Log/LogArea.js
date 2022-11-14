@@ -17,14 +17,9 @@ export default function LogArea({service, node, pod}) {
             });
     }
 
-    const logTailFlagF = () => {
-        console.log("f");
-    }
-
     const logInit = () => {
         setLogData('');
     }
-
 
     return (
         <Grid container spacing={2}>
@@ -44,14 +39,6 @@ export default function LogArea({service, node, pod}) {
                     className={styles.btn}
                 >
                     로그 100줄 보기
-                </Button>
-                <Button
-                    variant={"contained"}
-                    color={"secondary"}
-                    onClick={logTailFlagF}
-                    className={styles.btn}
-                >
-                    로그 계속 보기
                 </Button>
                 <Button
                     variant={"contained"}

@@ -2,7 +2,7 @@ import {Box, Button, Card, CardContent, Divider, IconButton, Typography} from "@
 import Grid from '@mui/material/Unstable_Grid2'
 import styles from "./_podCard.module.scss";
 import * as React from "react";
-import {useEffect, useState} from "react";
+import {useState} from "react";
 import axios from "axios";
 import SettingsIcon from "@mui/icons-material/Settings";
 import NodeModal from "../Modal/NodeModal";
@@ -20,7 +20,10 @@ const CardHeader = ({nodeName, json, changeRestore}) => {
     }
 
     const healthCheck = async () => {
-        await axios.get(API + `/health?service=${json.service}&node=${nodeName}`);
+        await axios.get(API + `/health?service=${json.service}&node=${nodeName}`)
+            .then((resp) => {
+                alert(JSON.stringify(resp.data));
+            });
     }
 
     return (

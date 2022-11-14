@@ -4,8 +4,8 @@
     {
       "name": "Example-Node1",
       "agent": {
-        "host" : "localhost",
-        "port": "6000"
+        "host" : "http://localhost",
+        "port": ":6000"
       },
       "podList": [
         {
@@ -21,8 +21,8 @@
     {
       "name": "Example-Node2",
       "agent": {
-        "host" : "localhost",
-        "port": "6000"
+        "host" : "http://localhost",
+        "port": ":6000"
       },
       "podList": [
         {
