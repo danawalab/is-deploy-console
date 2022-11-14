@@ -4,12 +4,19 @@
   margin-top: 5px;
 }
 
+.excludeBox {
+  border: 1px solid black;
+  width: 100%;
+  margin-top: 5px;
+  background-color: red;
+}
+
 .mL {
   margin: 10px;
 }
 
 .podTitle {
-  margin: 10px;
+  font-weight: bold;
 }
 
 .btn {
@@ -27,7 +34,6 @@
   min-width: 300px;
   height: 100%;
   min-height: 300px;
-  //max-height: 300px;
   transition: 0.3s;
   margin: auto;
   box-shadow: 0 8px 40px -12px rgba(0, 0, 0, 0.3);
