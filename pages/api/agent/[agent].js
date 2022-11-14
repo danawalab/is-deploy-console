@@ -16,7 +16,6 @@ export default function handler(req, res) {
                 .reduce(nodes => nodes.agent);
             const API = `${agent.agent.host}${agent.agent.port}`;
 
-            console.log("api = ", API);
             switch (req.query.agent) {
                 case 'health':
                     axios.get(API + '/health-check')
