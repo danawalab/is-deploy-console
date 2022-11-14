@@ -5,7 +5,6 @@ import {Box, Divider, Grid, IconButton} from "@mui/material";
 import Layout from "../../components/Layout/Layout";
 import PodCard from "../../components/Pod/PodCard";
 import JsonModal from "../../components/Modal/JsonModal";
-import LogArea from "../../components/Pod/LogArea";
 import Init from "../../components/Layout/Init";
 import axios from "axios";
 import styles from "../_index.module.scss";

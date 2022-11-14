@@ -6,6 +6,7 @@ import {useEffect, useState} from "react";
 import axios from "axios";
 import SettingsIcon from "@mui/icons-material/Settings";
 import NodeModal from "../Modal/NodeModal";
+import {router} from "next/router";
 
 const API = 'http://localhost:3000/api/agent/'
 
@@ -85,11 +86,17 @@ const CardBody = ({json, nodeName, index, restore, changeRestoreFalse}) => {
         await axios.post(API + '/deploy' + QUERY + `&pod=${podName}`);
     }
 
-    const log = async (podName) => {
-        await axios.post(API + '/log' + QUERY + `&pod=${podName}`)
-            .then((resp) => {
-                setLogData(resp.data)
-            });
+    const log = (service, node, pod) => {
+        router.push({
+                pathname: `/service/log/${pod}`,
+                query: {
+                    service: service,
+                    node: node,
+                    pod: pod,
+                },
+            },
+            `/service/log/${pod}`
+        );
     }
 
     return (
@@ -135,7 +142,7 @@ const CardBody = ({json, nodeName, index, restore, changeRestoreFalse}) => {
                                         variant={"contained"}
                                         size={"small"}
                                         color={"success"}
-                                        onClick={() => log(pod.name)}
+                                        onClick={() => log(json.service, node.name, pod.name)}
                                         className={styles.mL}
                                     >
                                         Log
