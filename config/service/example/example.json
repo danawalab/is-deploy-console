@@ -9,10 +9,12 @@
       },
       "podList": [
         {
-          "name": "Example-Node1-Pod1"
+          "name": "Example-Node1-Pod1",
+          "index": 1
         },
         {
-          "name": "Example-Node1-Pod2"
+          "name": "Example-Node1-Pod2",
+          "index": 2
         }
       ]
     },
@@ -20,14 +22,16 @@
       "name": "Example-Node2",
       "agent": {
         "host" : "localhost",
-        "port": "5000"
+        "port": "6000"
       },
       "podList": [
         {
-          "name": "Example-Node2-Pod1"
+          "name": "Example-Node2-Pod1",
+          "index": 1
         },
         {
-          "name": "Example-Node2-Pod2"
+          "name": "Example-Node2-Pod2",
+          "index": 2
         }
       ]
     }

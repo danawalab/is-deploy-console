@@ -42,10 +42,9 @@ export default function ServiceHome({data}) {
                                 index={index}
                             />
                         </Grid>
-                    )): <Init/>}
+                    )) : <Init/>}
                 </Grid>
                 <Divider/>
-                <LogArea/>
             </Box>
         </Layout>
     );

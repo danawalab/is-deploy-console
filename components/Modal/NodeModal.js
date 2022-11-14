@@ -1,7 +1,7 @@
 import {Box, Button, Divider, Modal, TextareaAutosize, Typography} from "@mui/material";
 import styles from "./_modal.module.scss";
 import * as React from "react";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import axios from "axios";
 
 export default function NodeModal({open, onClose, service, nodeName}) {
@@ -10,26 +10,18 @@ export default function NodeModal({open, onClose, service, nodeName}) {
     const [json, setJson] = useState();
     const API = `http://localhost:3000/api/agent/sync?service=${service}&node=${nodeName}`;
 
-    /**
-     * agent로 부터 setting.json을 불러온다
-     * @returns {Promise<void>}
-     */
-    const getJson = async () => {
-        if (isOpen(textAreaOpen)) {
-            alert("수정을 비활성화해주세요.");
-        } else {
-            await axios.get(API)
-                .then((resp) => {
-                    setJson(JSON.stringify(resp.data, null, 2));
-                });
-        }
-    }
+    useEffect(() => {
+        axios.get(API)
+            .then((resp) => {
+                setJson(JSON.stringify(resp.data, null, 2));
+            });
+    }, [API])
 
     /**
      * agent에게 변경된 setting.json 정보를 보내 동기화 시킨다
      * @returns {Promise<void>}
      */
-    const sync = async () => {
+    const save = async () => {
         if (isOpen(textAreaOpen)) {
             alert("수정을 비활성화해주세요.");
         } else {
@@ -84,18 +76,10 @@ export default function NodeModal({open, onClose, service, nodeName}) {
                         <Button
                             variant={"contained"}
                             color={"primary"}
-                            onClick={getJson}
+                            onClick={save}
                             className={styles.mL}
                         >
-                            json 불러오기
-                        </Button>
-                        <Button
-                            variant={"contained"}
-                            color={"success"}
-                            onClick={sync}
-                            className={styles.mL}
-                        >
-                            동기화
+                            저장
                         </Button>
                     </Box>
                 </Box>
