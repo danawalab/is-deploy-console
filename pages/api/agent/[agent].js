@@ -20,35 +20,30 @@ export default function handler(req, res) {
                 case 'health':
                     axios.get(API + '/health-check')
                         .then((resp) => {
-                            console.log(resp.data);
                             return res.status(200).json(resp.data);
                         });
                     break;
                 case 'restore' :
                     axios.put(API + '/load-balance/restore')
                         .then((resp) => {
-                            console.log(resp.data);
                             return res.status(200).json(resp.data);
                         });
                     break;
                 case 'exclude':
                     axios.put(API + `/load-balance/exclude?worker=${POD}`)
                         .then((resp) => {
-                            console.log(resp.data);
                             return res.status(200).json(resp.data);
                         });
                     break;
                 case 'deploy':
                     axios.put(API + `/webapp/deploy?worker=${POD}`)
                         .then((resp) => {
-                            console.log(resp.data);
                             return res.status(200).json(resp.data);
                         });
                     break;
                 case 'log':
                     axios.get(API + `/logs/tail/n?worker=${POD}&line=100`)
                         .then((resp) => {
-                            console.log(resp.data);
                             return res.status(200).json(resp.data);
                         });
                     break;
