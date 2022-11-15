@@ -15,7 +15,7 @@ export default function handler(req, res) {
      */
     let path = QUERY === 'config' ?
         './config/config.json' :
-        `./config/service/${QUERY}/${QUERY}.json`;
+        `./config/service/${QUERY}/${QUERY.toLowerCase()}.json`;
 
     /**
      * json을 읽어 반환한다.

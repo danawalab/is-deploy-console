@@ -65,7 +65,7 @@ const CardHeader = ({nodeName, json, changeRestore}) => {
                     onClick={healthCheck}
                     className={styles.btn}
                 >
-                    Health
+                    Agent Health Check
                 </Button>
             </Grid>
         </Grid>
@@ -104,18 +104,18 @@ const CardBody = ({json, nodeName, index, restore, changeRestoreFalse}) => {
 
     return (
         <Grid container>
-            {json.node.map((node, idx) => (
-                idx === index ? node.podList.map((pod) => (
-                    <Grid xs={12} md={6} xl={6}>
+            {json.node.map((node, nodeIndex) => (
+                nodeIndex === index? node.podList.map((pod, podIndex) => (
+                    <Grid key={pod} xs={12} md={6} xl={6}>
                         <Box
                             className={restore === true ? styles.box : excludeStatus === false ? styles.box
-                                : pod.index === podIdx ? styles.excludeBox : styles.box}
+                                : podIndex === podIdx ? styles.excludeBox : styles.box}
                         >
                             <Grid container>
                                 <Grid xs={12} className={styles.mL}>
                                     <div className={styles.podTitle}>
                                         {restore === true ? pod.name : excludeStatus === false ? pod.name
-                                            : pod.index === podIdx ? pod.name + " Exclude" : pod.name}
+                                            : podIndex === podIdx ? pod.name + " Exclude" : pod.name}
                                     </div>
                                 </Grid>
                                 <Grid xs={4}>
@@ -123,7 +123,7 @@ const CardBody = ({json, nodeName, index, restore, changeRestoreFalse}) => {
                                         variant={"contained"}
                                         size={"small"}
                                         color={"error"}
-                                        onClick={() => exclude(pod.name, pod.index)}
+                                        onClick={() => exclude(pod.name, podIndex)}
                                         className={styles.mL}
                                     >
                                         Exclude
