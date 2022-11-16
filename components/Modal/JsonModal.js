@@ -5,11 +5,12 @@ import styles from './_modal.module.scss'
 import axios from "axios";
 
 
-export default function JsonModal({open, onClose, data, id}) {
+export default function JsonModal({open, onClose, data, service}) {
     const [textAreaOpen, setTextAreaOpen] = useState(true);
     const handleTextArea = () => setTextAreaOpen(!textAreaOpen);
     const [json, setJson] = useState();
-    const API = `http://localhost:3000/api/${id.toLowerCase()}`;
+    const API = `http://localhost:3000/api/${service.toLowerCase()}`;
+    const AGENT_API =  `http://localhost:3000/api/agent/sync?service=${service}`;
 
     useEffect(() => {
         setJson(data);
@@ -17,24 +18,27 @@ export default function JsonModal({open, onClose, data, id}) {
 
     /**
      * 수정한 json을 저장한다.
-     * 만약 수정 버튼이 활성화돼있다면 alert를 통해 수정 버튼을 비활성화 유도한다.
      * @returns {Promise<void>}
      */
     const save = async () => {
-        if (isOpen(textAreaOpen)) {
-            alert("수정을 비활성화해주세요.");
+        if (service === 'config') {
+            await axios.put(API, {
+                data: json,
+            });
         } else {
-            // axios는 값을 object 형태로 감싸서 서버로 보내기에 content-type을 text로 지정해 그대로 넘기게 변경
-            await axios.put(API, json, {
-                "headers": {
-                    "content-type": "application/text",
-                },
+            await axios.put(API, {
+                data: json,
+            });
+
+            await axios.put(AGENT_API, {
+                data: json,
             });
         }
+        close();
     }
 
-    const isOpen = (open) => {
-        return open === false;
+    const close = () => {
+        onClose();
     }
 
     // 모달창 꺼지면 수정 비홯성화

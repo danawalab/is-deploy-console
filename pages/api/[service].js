@@ -28,7 +28,8 @@ export default function handler(req, res) {
      * 수정된 json 값을 받아 json 파일을 덮어 쓴다.
      */
     if (req.method === 'PUT') {
-        let json = JSON.stringify(JSON.parse(req.body),null, 2);
+        // let json = JSON.stringify(JSON.parse(req.body),null, 2);
+        let json = req.body.data;
         fs.writeFileSync(path, json, 'utf-8');
     }
 

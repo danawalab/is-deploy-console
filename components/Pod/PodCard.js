@@ -1,26 +1,22 @@
-import {Box, Button, Card, CardContent, Divider, IconButton, Typography} from "@mui/material";
+import {Box, Button, Card, CardContent, Divider, Typography} from "@mui/material";
 import Grid from '@mui/material/Unstable_Grid2'
 import styles from "./_podCard.module.scss";
 import * as React from "react";
 import {useState} from "react";
 import axios from "axios";
-import SettingsIcon from "@mui/icons-material/Settings";
-import NodeModal from "../Modal/NodeModal";
 import {router} from "next/router";
+import ConfirmModal from "../Modal/ConfirmModal";
 
 const API = 'http://localhost:3000/api/agent/'
 
-const CardHeader = ({nodeName, json, changeRestore}) => {
-    const [open, setOpen] = useState(false);
-    const handleOpen = () => setOpen(!open);
-
+const CardHeader = ({json, node, changeRestore}) => {
     const restore = async () => {
-        await axios.get(API + `/restore?service=${json.service}&node=${nodeName}`);
+        await axios.get(API + `/restore?service=${json.service}&node=${node}`);
         changeRestore();
     }
 
     const healthCheck = async () => {
-        await axios.get(API + `/health?service=${json.service}&node=${nodeName}`)
+        await axios.get(API + `/health?service=${json.service}&node=${node}`)
             .then((resp) => {
                 alert(JSON.stringify(resp.data));
             });
@@ -33,22 +29,10 @@ const CardHeader = ({nodeName, json, changeRestore}) => {
                     variant="h5"
                     component="div"
                 >
-                    {nodeName}
+                    {node}
                 </Typography>
             </Grid>
             <Grid xs={6} md={4} xl={4}>
-                <IconButton
-                    className={styles.iconButton}
-                    onClick={handleOpen}
-                >
-                    <SettingsIcon/>
-                </IconButton>
-                <NodeModal
-                    open={open}
-                    onClose={handleOpen}
-                    service={json.service}
-                    nodeName={nodeName}
-                />
                 <Button
                     variant={"contained"}
                     size={"small"}
@@ -72,33 +56,40 @@ const CardHeader = ({nodeName, json, changeRestore}) => {
     );
 }
 
-const CardBody = ({json, nodeName, index, restore, changeRestoreFalse}) => {
+const CardBody = ({json, index, restore, changeRestoreFalse}) => {
     const [excludeStatus, setExcludeStatus] = useState(false);
-    const [podIdx, setPodIdx] = useState(0);
-
-    const QUERY = `?service=${json.service}&node=${nodeName}`
+    const [excludePodIndex, setExcludePodIndex] = useState(0);
+    const [action, setAction] = useState();
+    const [podName, setPodName] = useState();
+    const [open, setOpen] = useState(false);
+    const handleOpen = () => setOpen(!open);
 
     const exclude = async (podName, podIndex) => {
-        await axios.post(API + '/exclude' + QUERY + `&pod=${podName}`);
-        setExcludeStatus(true);
-        setPodIdx(podIndex);
-        changeRestoreFalse();
+        // await axios.post(API + '/exclude' + QUERY + `&pod=${podName}`);
+        // setExcludeStatus(true);
+        // setExcludePodIndex(podIndex);
+        // changeRestoreFalse();
+        setAction('exclude')
+        setPodName(podName)
+        handleOpen();
     }
 
     const deploy = async (podName) => {
-        await axios.post(API + '/deploy' + QUERY + `&pod=${podName}`);
+        setAction('deploy')
+        setPodName(podName)
+        handleOpen();
     }
 
     const log = (service, node, pod) => {
         router.push({
-                pathname: `/service/log/${pod}`,
+                pathname: `/service/log/${pod}?service=${service}&node=${node}`,
                 query: {
                     service: service,
                     node: node,
                     pod: pod,
                 },
             },
-            `/service/log/${pod}`
+            `/service/log/${pod}?service=${service}&node=${node}`
         );
     }
 
@@ -109,13 +100,13 @@ const CardBody = ({json, nodeName, index, restore, changeRestoreFalse}) => {
                     <Grid key={pod} xs={12} md={6} xl={6}>
                         <Box
                             className={restore === true ? styles.box : excludeStatus === false ? styles.box
-                                : podIndex === podIdx ? styles.excludeBox : styles.box}
+                                : podIndex === excludePodIndex ? styles.excludeBox : styles.box}
                         >
                             <Grid container>
                                 <Grid xs={12} className={styles.mL}>
                                     <div className={styles.podTitle}>
                                         {restore === true ? pod.name : excludeStatus === false ? pod.name
-                                            : podIndex === podIdx ? pod.name + " Exclude" : pod.name}
+                                            : podIndex === excludePodIndex ? pod.name + " Exclude" : pod.name}
                                     </div>
                                 </Grid>
                                 <Grid xs={4}>
@@ -150,6 +141,14 @@ const CardBody = ({json, nodeName, index, restore, changeRestoreFalse}) => {
                                     >
                                         Log
                                     </Button>
+                                    <ConfirmModal
+                                        open={open}
+                                        onClose={handleOpen}
+                                        action={action}
+                                        service={json.service}
+                                        node={node.name}
+                                        pod={podName}
+                                    />
                                 </Grid>
                             </Grid>
                         </Box>
@@ -160,7 +159,7 @@ const CardBody = ({json, nodeName, index, restore, changeRestoreFalse}) => {
     );
 }
 
-export default function PodCard({nodeName, json, index}) {
+export default function PodCard({json, node, index}) {
     const [restore, setRestore] = useState(false);
 
     const changeRestoreTrue = () => {
@@ -177,8 +176,8 @@ export default function PodCard({nodeName, json, index}) {
                 <Card variant="outlined" className={styles.card}>
                     <CardContent>
                         <CardHeader
-                            nodeName={nodeName}
                             json={json}
+                            node={node}
                             changeRestore={changeRestoreTrue}
                         />
                     </CardContent>
@@ -186,7 +185,6 @@ export default function PodCard({nodeName, json, index}) {
                     <CardContent>
                         <CardBody
                             json={json}
-                            nodeName={nodeName}
                             index={index}
                             restore={restore}
                             changeRestoreFalse={changeRestoreFalse}
