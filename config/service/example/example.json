@@ -7,12 +7,35 @@
         "host": "http://localhost",
         "port": ":5000"
       },
+      "path": "/etc/apache2/uriworkermap.properties",
+      "lbMap": [
+        {
+          "key": "/*",
+          "value": "load_balancer"
+        }
+      ],
       "podList": [
         {
-          "name": "Example-Node1-Pod1"
+          "name": "Example-Node1-Pod1",
+          "lbMap": [
+            {
+              "key": "/*",
+              "value": "load_balancer_ex1"
+            }
+          ],
+          "logPath": "./sample/catalina.out",
+          "shPath": "./sample/tomcat1.sh"
         },
         {
-          "name": "Example-Node1-Pod2"
+          "name": "Example-Node1-Pod2",
+          "lbMap": [
+            {
+              "key": "/*",
+              "value": "load_balancer_ex2"
+            }
+          ],
+          "logPath": "./sample/catalina.out",
+          "shPath": "./sample/tomcat2.sh"
         }
       ]
     },
@@ -22,12 +45,35 @@
         "host": "http://localhost",
         "port": ":6000"
       },
+      "path": "/etc/apache2/uriworkermap.properties",
+      "lbMap": [
+        {
+          "key": "/*",
+          "value": "load_balancer"
+        }
+      ],
       "podList": [
         {
-          "name": "Example-Node2-Pod1"
+          "name": "Example-Node2-Pod1",
+          "lbMap": [
+            {
+              "key": "/*",
+              "value": "load_balancer_ex1"
+            }
+          ],
+          "logPath": "./sample/catalina.out",
+          "shPath": "./sample/tomcat1.sh"
         },
         {
-          "name": "Example-Node2-Pod2"
+          "name": "Example-Node2-Pod2",
+          "lbMap": [
+            {
+              "key": "/*",
+              "value": "load_balancer_ex2"
+            }
+          ],
+          "logPath": "./sample/catalina.out",
+          "shPath": "./sample/tomcat2.sh"
         }
       ]
     }

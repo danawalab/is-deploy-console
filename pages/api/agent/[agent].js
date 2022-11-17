@@ -11,10 +11,10 @@ export default function handler(req, res) {
         if (err !== null) {
             console.error(err);
         } else {
-            let agent = JSON.parse(data).node
+            let agent = NODE !== undefined ? JSON.parse(data).node
                 .filter(nodes => nodes.name === NODE)
-                .reduce(nodes => nodes.agent);
-            const API = `${agent.agent.host}${agent.agent.port}`;
+                .reduce(nodes => nodes.agent) : '';
+            const API = NODE !== undefined ? `${agent.agent.host}${agent.agent.port}` : '';
 
             switch (req.query.agent) {
                 case 'health':
@@ -56,11 +56,12 @@ export default function handler(req, res) {
                                 });
                             break;
                         case 'PUT':
-                            axios.put(API + `/sync`, req.body.data
-                            )
-                                .then((resp) => {
-                                    return res.status(200).json(resp.data);
-                                });
+                            JSON.parse(req.body.data).node.map((node) => {
+                                axios.put(`${node.agent.host}${node.agent.port}/sync`, JSON.stringify(node, null, 2))
+                                    .then((resp) => {
+                                        console.log(resp.data);
+                                    });
+                            });
                             break;
                     }
                     break;

@@ -20,17 +20,17 @@ export default function JsonModal({open, onClose, data, service}) {
      * 수정한 json을 저장한다.
      * @returns {Promise<void>}
      */
-    const save = async () => {
+    const save =  () => {
         if (service === 'config') {
-            await axios.put(API, {
+             axios.put(API, {
                 data: json,
             });
         } else {
-            await axios.put(API, {
+             axios.put(API, {
                 data: json,
             });
 
-            await axios.put(AGENT_API, {
+            axios.put(AGENT_API, {
                 data: json,
             });
         }
