@@ -3,6 +3,7 @@ import styles from './_logArea.module.scss'
 import * as React from "react";
 import axios from "axios";
 import {useState} from "react";
+import useInterval from "../../service/useInterval";
 
 const API = 'http://localhost:3000/api/agent/'
 
@@ -10,16 +11,16 @@ export default function LogArea({service, node, pod}) {
     const [logData, setLogData] = useState();
     const QUERY = `?service=${service}&node=${node}`
 
-    const logTailFlagN = async () => {
+    const logInit = () => {
+        setLogData('');
+    }
+
+    useInterval(async () => {
         await axios.post(API + '/log' + QUERY + `&pod=${pod}`)
             .then((resp) => {
                 setLogData(resp.data)
             });
-    }
-
-    const logInit = () => {
-        setLogData('');
-    }
+    }, 2000)
 
     return (
         <Grid container spacing={2}>
@@ -32,14 +33,6 @@ export default function LogArea({service, node, pod}) {
                 />
             </Grid>
             <Grid item xs={12}>
-                <Button
-                    variant={"contained"}
-                    color={"primary"}
-                    onClick={logTailFlagN}
-                    className={styles.btn}
-                >
-                    로그 100줄 보기
-                </Button>
                 <Button
                     variant={"contained"}
                     color={"success"}

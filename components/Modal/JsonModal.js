@@ -64,7 +64,7 @@ export default function JsonModal({open, onClose, data, service}) {
                         <TextareaAutosize
                             className={styles.textArea}
                             disabled={textAreaOpen}
-                            minRows={4}
+                            maxRows={43}
                             defaultValue={data}
                             onChange={(e) => setJson(e.target.value)}
                         />

@@ -1,8 +1,7 @@
-import {useEffect, useState} from "react";
-import axios from "axios";
-import {Box, Button, Divider, Modal, TextareaAutosize, Typography} from "@mui/material";
-import styles from "./_modal.module.scss";
 import * as React from "react";
+import axios from "axios";
+import {Box, Button, Divider, Modal, Typography} from "@mui/material";
+import styles from "./_modal.module.scss";
 
 const API = 'http://localhost:3000/api/agent/'
 
@@ -11,9 +10,6 @@ export default function ConfirmModal({open, onClose, action, service, node, pod}
 
     const exclude = () => {
         axios.post(API + '/exclude' + QUERY + `&pod=${pod}`);
-        // setExcludeStatus(true);
-        // setExcludePodIndex(podIndex);
-        // changeRestoreFalse();
         close();
     }
 

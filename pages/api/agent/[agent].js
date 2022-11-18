@@ -59,7 +59,7 @@ export default function handler(req, res) {
                             JSON.parse(req.body.data).node.map((node) => {
                                 axios.put(`${node.agent.host}${node.agent.port}/sync`, JSON.stringify(node, null, 2))
                                     .then((resp) => {
-                                        console.log(resp.data);
+                                        return res.status(200).json(resp.data);
                                     });
                             });
                             break;
