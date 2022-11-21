@@ -5,16 +5,46 @@ import styles from "./_modal.module.scss";
 
 const API = 'http://localhost:3000/api/agent/'
 
-export default function ConfirmModal({open, onClose, action, service, node, pod}) {
+export default function ConfirmModal({
+                                         open,
+                                         onClose,
+                                         action,
+                                         service,
+                                         node,
+                                         pod,
+                                         setAlertOpen,
+                                         setType,
+                                         setMessage
+                                     }) {
     const QUERY = `?service=${service}&node=${node}`;
 
     const exclude = () => {
-        axios.post(API + '/exclude' + QUERY + `&pod=${pod}`);
+        axios.post(API + '/exclude' + QUERY + `&pod=${pod}`)
+            .then((resp) => {
+                setMessage(JSON.stringify(resp.data.message));
+                setType('success');
+                setAlertOpen(true)
+            })
+            .catch((resp) => {
+                setMessage(JSON.stringify(resp.data.message));
+                setType('error');
+                setAlertOpen(true)
+            });
         close();
     }
 
     const deploy = () => {
-        axios.post(API + '/deploy' + QUERY + `&pod=${pod}`);
+        axios.post(API + '/deploy' + QUERY + `&pod=${pod}`)
+            .then((resp) => {
+                setMessage(JSON.stringify(resp.data.message));
+                setType('success');
+                setAlertOpen(true)
+            })
+            .catch((resp) => {
+                setMessage(JSON.stringify(resp.data.message));
+                setType('error');
+                setAlertOpen(true)
+            });
         close();
     }
 

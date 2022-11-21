@@ -29,6 +29,14 @@ export default function handler(req, res) {
                             return res.status(200).json(resp.data);
                         });
                     break;
+                case 'lb':
+                   req.body.data.node.map((node) => {
+                        axios.get(`${node.agent.host}${node.agent.port}/load-balance`)
+                            .then((resp) => {
+                                return res.status(200).json(resp.data);
+                            });
+                    });
+                   break;
                 case 'exclude':
                     axios.put(API + `/load-balance/exclude?worker=${POD}`)
                         .then((resp) => {
@@ -57,10 +65,12 @@ export default function handler(req, res) {
                             break;
                         case 'PUT':
                             JSON.parse(req.body.data).node.map((node) => {
-                                axios.put(`${node.agent.host}${node.agent.port}/sync`, JSON.stringify(node, null, 2))
-                                    .then((resp) => {
-                                        return res.status(200).json(resp.data);
-                                    });
+                                axios.put(
+                                    `${node.agent.host}${node.agent.port}/sync`,
+                                    JSON.stringify(node, null, 2)
+                                ).then((resp) => {
+                                    return res.status(200).json(resp.data);
+                                });
                             });
                             break;
                     }
