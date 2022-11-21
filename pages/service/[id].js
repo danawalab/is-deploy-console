@@ -30,14 +30,14 @@ export default function ServiceHome({data}) {
                             open={open}
                             onClose={handleOpen}
                             data={data}
-                            id={json.service}
+                            service={json.service}
                         />
                     </Grid>
                     {nodeLength !== 0 ? json.node.map((node, index) => (
                         <Grid key={node} item xs={12} md={6} xl={6}>
                             <PodCard
-                                nodeName={node.name}
                                 json={json}
+                                node={node.name}
                                 index={index}
                             />
                         </Grid>

@@ -29,7 +29,7 @@ export default function Home({data}) {
                             open={open}
                             onClose={handleOpen}
                             data={data}
-                            id={'config'}
+                            service={'config'}
                         />
                     </Grid>
                     {json.serviceList.map((service) => (

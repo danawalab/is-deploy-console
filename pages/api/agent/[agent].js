@@ -11,10 +11,10 @@ export default function handler(req, res) {
         if (err !== null) {
             console.error(err);
         } else {
-            let agent = JSON.parse(data).node
+            let agent = NODE !== undefined ? JSON.parse(data).node
                 .filter(nodes => nodes.name === NODE)
-                .reduce(nodes => nodes.agent);
-            const API = `${agent.agent.host}${agent.agent.port}`;
+                .reduce(nodes => nodes.agent) : '';
+            const API = NODE !== undefined ? `${agent.agent.host}${agent.agent.port}` : '';
 
             switch (req.query.agent) {
                 case 'health':
@@ -29,6 +29,14 @@ export default function handler(req, res) {
                             return res.status(200).json(resp.data);
                         });
                     break;
+                case 'lb':
+                   req.body.data.node.map((node) => {
+                        axios.get(`${node.agent.host}${node.agent.port}/load-balance`)
+                            .then((resp) => {
+                                return res.status(200).json(resp.data);
+                            });
+                    });
+                   break;
                 case 'exclude':
                     axios.put(API + `/load-balance/exclude?worker=${POD}`)
                         .then((resp) => {
@@ -56,11 +64,14 @@ export default function handler(req, res) {
                                 });
                             break;
                         case 'PUT':
-                            axios.put(API + `/sync`, req.body.data
-                            )
-                                .then((resp) => {
+                            JSON.parse(req.body.data).node.map((node) => {
+                                axios.put(
+                                    `${node.agent.host}${node.agent.port}/sync`,
+                                    JSON.stringify(node, null, 2)
+                                ).then((resp) => {
                                     return res.status(200).json(resp.data);
                                 });
+                            });
                             break;
                     }
                     break;
