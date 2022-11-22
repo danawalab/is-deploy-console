@@ -2,7 +2,7 @@ import {Box, Button, Card, CardContent, Divider, Typography} from "@mui/material
 import Grid from '@mui/material/Unstable_Grid2'
 import styles from "./_podCard.module.scss";
 import * as React from "react";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import axios from "axios";
 import {router} from "next/router";
 import ConfirmModal from "../Modal/ConfirmModal";
@@ -28,11 +28,11 @@ const CardHeader = ({json, node, changeRestore}) => {
                 setMessage(JSON.stringify(resp.data.message));
                 setType('success');
                 setOpen(true)
-            })
-            .catch((resp) => {
-                setMessage(JSON.stringify(resp.data.message));
-                setType('error');
-                setOpen(true)
+                if (resp.data.error !== undefined) {
+                    setMessage(JSON.stringify(resp.data.error));
+                    setType('error');
+                    setOpen(true)
+                }
             });
         changeRestore();
     }
@@ -43,11 +43,11 @@ const CardHeader = ({json, node, changeRestore}) => {
                 setMessage(JSON.stringify(resp.data.message));
                 setType('success');
                 setOpen(true)
-            })
-            .catch((resp) => {
-                setMessage(JSON.stringify(resp.data.message));
-                setType('error');
-                setOpen(true)
+                if (resp.data.error !== undefined) {
+                    setMessage(JSON.stringify(resp.data.error));
+                    setType('error');
+                    setOpen(true)
+                }
             });
     }
 
@@ -92,15 +92,14 @@ const CardHeader = ({json, node, changeRestore}) => {
 }
 
 const CardBody = ({json, index, restore, changeRestoreFalse, timer}) => {
-    const [excludeStatus, setExcludeStatus] = useState(false);
-    const [excludePodIndex, setExcludePodIndex] = useState(0);
     const [action, setAction] = useState();
+
     const [podName, setPodName] = useState();
-
     const [modalOpen, setModalOpen] = useState(false);
-    const modalHandleOpen = () => setModalOpen(!modalOpen);
 
+    const modalHandleOpen = () => setModalOpen(!modalOpen);
     const [alertOpen, setAlertOpen] = useState(false);
+
     const [type, setType] = useState('error');
     const [message, setMessage] = useState('');
     const alertHandleClose = (event, reason) => {
@@ -110,14 +109,36 @@ const CardBody = ({json, index, restore, changeRestoreFalse, timer}) => {
         setAlertOpen(false);
     };
 
-    const exclude = async (podName) => {
+    const [excludeStatus, setExcludeStatus] = useState(false);
+    const [excludePodIndex, setExcludePodIndex] = useState(0);
+
+    useInterval(() => {
+        axios.post(API + `/lb?service=${json.service}`, {
+            data: json
+        }).then((resp) => {
+            // console.log(new Date(), "useInterval> timer:", timer, excludeStatus, excludePodIndex, resp.data);
+            json.node.map((node, nodeIndex) => {
+                nodeIndex === index ? node.podList.map((pod, podIndex) => {
+                    if (resp.data[nodeIndex] === pod.name) {
+                        setExcludeStatus(true);
+                        setExcludePodIndex(podIndex);
+                        changeRestoreFalse();
+                    }
+                }) : null
+            })
+        });
+    },  timer)
+
+    // const [disable, setDisable] = useState(true);
+
+    const exclude = (podName) => {
         setAction('exclude');
         setPodName(podName);
         modalHandleOpen();
-        changeRestoreFalse();
+        // setDisable(false);
     }
 
-    const deploy = async (podName) => {
+    const deploy = (podName) => {
         setAction('deploy');
         setPodName(podName);
         modalHandleOpen();
@@ -136,26 +157,12 @@ const CardBody = ({json, index, restore, changeRestoreFalse, timer}) => {
         );
     }
 
-    useInterval(() => {
-        axios.post(API + `/lb?service=${json.service}`, {
-            data: json
-        }).then((resp) => {
-            json.node.map((node, nodeIndex) => {
-                nodeIndex === index ? node.podList.map((pod, podIndex) => {
-                    if (resp.data.message === pod.name) {
-                        setExcludeStatus(true);
-                        setExcludePodIndex(podIndex);
-                    }
-                }) : null
-            })
-        });
-    }, timer)
-
     return (
         <Grid container>
             {json.node.map((node, nodeIndex) => (
                 nodeIndex === index ? node.podList.map((pod, podIndex) => (
-                    <Grid key={pod} xs={12} md={6} xl={6}>
+                    <Grid
+                        key={pod} xs={12} md={6} xl={6}>
                         <Box
                             className={restore === true ? styles.box : excludeStatus === false ? styles.box
                                 : podIndex === excludePodIndex ? styles.excludeBox : styles.box}
@@ -183,6 +190,7 @@ const CardBody = ({json, index, restore, changeRestoreFalse, timer}) => {
                                         variant={"contained"}
                                         size={"small"}
                                         color={"primary"}
+                                        // disabled={disable}
                                         onClick={() => deploy(pod.name)}
                                         className={styles.mL}
                                     >
@@ -228,20 +236,20 @@ const CardBody = ({json, index, restore, changeRestoreFalse, timer}) => {
 
 export default function PodCard({json, node, index}) {
     const [restore, setRestore] = useState(false);
-    const [intervalTimer, setIntervalTimer] = useState(300000);
+    const [intervalTimer, setIntervalTimer] = useState(5000); // 30초
 
     const changeRestoreTrue = () => {
         setRestore(true);
-        setIntervalTimer(300000);
+        // setIntervalTimer(30000); // 30초
     }
 
     const changeRestoreFalse = () => {
         setRestore(false);
-        setIntervalTimer(1000);
+        // setIntervalTimer(3000); // 3초
 
-        setTimeout(() => {
-            setIntervalTimer(60000);
-        }, 30000);
+        // setTimeout(() => {
+        //     setIntervalTimer(60000);
+        // }, 30000);
     }
 
     return (
