@@ -24,11 +24,11 @@ export default function ConfirmModal({
                 setMessage(JSON.stringify(resp.data.message));
                 setType('success');
                 setAlertOpen(true)
-            })
-            .catch((resp) => {
-                setMessage(JSON.stringify(resp.data.message));
-                setType('error');
-                setAlertOpen(true)
+                if (resp.data.error !== undefined) {
+                    setMessage(JSON.stringify(resp.data.error));
+                    setType('error');
+                    setAlertOpen(true)
+                }
             });
         close();
     }
@@ -39,11 +39,11 @@ export default function ConfirmModal({
                 setMessage(JSON.stringify(resp.data.message));
                 setType('success');
                 setAlertOpen(true)
-            })
-            .catch((resp) => {
-                setMessage(JSON.stringify(resp.data.message));
-                setType('error');
-                setAlertOpen(true)
+                if (resp.data.error !== undefined) {
+                    setMessage(JSON.stringify(resp.data.error));
+                    setType('error');
+                    setAlertOpen(true)
+                }
             });
         close();
     }

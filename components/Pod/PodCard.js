@@ -28,11 +28,11 @@ const CardHeader = ({json, node, changeRestore}) => {
                 setMessage(JSON.stringify(resp.data.message));
                 setType('success');
                 setOpen(true)
-            })
-            .catch((resp) => {
-                setMessage(JSON.stringify(resp.data.message));
-                setType('error');
-                setOpen(true)
+                if (resp.data.error !== undefined) {
+                    setMessage(JSON.stringify(resp.data.error));
+                    setType('error');
+                    setOpen(true)
+                }
             });
         changeRestore();
     }
@@ -43,11 +43,11 @@ const CardHeader = ({json, node, changeRestore}) => {
                 setMessage(JSON.stringify(resp.data.message));
                 setType('success');
                 setOpen(true)
-            })
-            .catch((resp) => {
-                setMessage(JSON.stringify(resp.data.message));
-                setType('error');
-                setOpen(true)
+                if (resp.data.error !== undefined) {
+                    setMessage(JSON.stringify(resp.data.error));
+                    setType('error');
+                    setOpen(true)
+                }
             });
     }
 
@@ -92,8 +92,6 @@ const CardHeader = ({json, node, changeRestore}) => {
 }
 
 const CardBody = ({json, index, restore, changeRestoreFalse, timer}) => {
-    const [excludeStatus, setExcludeStatus] = useState(false);
-    const [excludePodIndex, setExcludePodIndex] = useState(0);
     const [action, setAction] = useState();
     const [podName, setPodName] = useState();
 
@@ -110,14 +108,13 @@ const CardBody = ({json, index, restore, changeRestoreFalse, timer}) => {
         setAlertOpen(false);
     };
 
-    const exclude = async (podName) => {
+    const exclude = (podName) => {
         setAction('exclude');
         setPodName(podName);
         modalHandleOpen();
-        changeRestoreFalse();
     }
 
-    const deploy = async (podName) => {
+    const deploy = (podName) => {
         setAction('deploy');
         setPodName(podName);
         modalHandleOpen();
@@ -143,28 +140,29 @@ const CardBody = ({json, index, restore, changeRestoreFalse, timer}) => {
             json.node.map((node, nodeIndex) => {
                 nodeIndex === index ? node.podList.map((pod, podIndex) => {
                     if (resp.data.message === pod.name) {
-                        setExcludeStatus(true);
-                        setExcludePodIndex(podIndex);
+                        console.log(pod.name + " exclude");
                     }
                 }) : null
             })
         });
-    }, timer)
+    }, 10000)
 
     return (
         <Grid container>
             {json.node.map((node, nodeIndex) => (
-                nodeIndex === index ? node.podList.map((pod, podIndex) => (
+                nodeIndex === index ? node.podList.map((pod) => (
                     <Grid key={pod} xs={12} md={6} xl={6}>
                         <Box
-                            className={restore === true ? styles.box : excludeStatus === false ? styles.box
-                                : podIndex === excludePodIndex ? styles.excludeBox : styles.box}
+                            /*className={restore === true ? styles.box : excludeStatus === false ? styles.box
+                                : podIndex === podIndex ? styles.excludeBox : styles.box}*/
+                            className={styles.box}
                         >
                             <Grid container>
                                 <Grid xs={12} className={styles.mL}>
                                     <div className={styles.podTitle}>
-                                        {restore === true ? pod.name : excludeStatus === false ? pod.name
-                                            : podIndex === excludePodIndex ? pod.name + " Exclude" : pod.name}
+                                        {/*{restore === true ? pod.name : excludeStatus === false ? pod.name
+                                            : podIndex === podIndex ? pod.name + " Exclude" : pod.name}*/}
+                                        {pod.name}
                                     </div>
                                 </Grid>
                                 <Grid xs={4}>

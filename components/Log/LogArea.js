@@ -15,12 +15,14 @@ export default function LogArea({service, node, pod}) {
         setLogData('');
     }
 
+    // 5초에 로그 100줄 다시 불러옴
+    //todo 5초뒤 로그 불러오면 덮어 쓰는게 아닌 append 형식으로 변경
     useInterval(async () => {
         await axios.post(API + '/log' + QUERY + `&pod=${pod}`)
             .then((resp) => {
                 setLogData(resp.data)
             });
-    }, 2000)
+    }, 5000)
 
     return (
         <Grid container spacing={2}>
