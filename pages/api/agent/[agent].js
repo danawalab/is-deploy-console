@@ -7,7 +7,7 @@ export default function handler(req, res) {
     const POD = req.query.pod;
     const PATH = `./config/service/${SERVICE}/${SERVICE}.json`;
 
-    fs.readFile(PATH, 'utf-8', (err, data) => {
+    fs.readFile(PATH, 'utf-8', async (err, data) => {
         if (err !== null) {
             console.error(err);
         } else {
@@ -40,17 +40,12 @@ export default function handler(req, res) {
                         });
                     break;
                 case 'lb':
-                    req.body.data.node.map((node) => {
-                        axios.get(`${node.agent.host}${node.agent.port}/load-balance`)
-                            .then((resp) => {
-                                return res.status(200).json(resp.data);
-                            })
-                            .catch(() => {
-                                return res.status(200).json({
-                                    error: "Not Connect",
-                                });
-                            });
-                    });
+                    let ret = []
+                    for (let node of req.body.data.node) {
+                        let resp = await axios.get(`${node.agent.host}${node.agent.port}/load-balance`);
+                        ret.push(resp.data.message)
+                    }
+                    res.status(200).json(ret);
                     break;
                 case 'exclude':
                     axios.put(API + `/load-balance/exclude?worker=${POD}`)

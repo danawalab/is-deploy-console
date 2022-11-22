@@ -2,7 +2,7 @@ import {Box, Button, Card, CardContent, Divider, Typography} from "@mui/material
 import Grid from '@mui/material/Unstable_Grid2'
 import styles from "./_podCard.module.scss";
 import * as React from "react";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import axios from "axios";
 import {router} from "next/router";
 import ConfirmModal from "../Modal/ConfirmModal";
@@ -93,12 +93,13 @@ const CardHeader = ({json, node, changeRestore}) => {
 
 const CardBody = ({json, index, restore, changeRestoreFalse, timer}) => {
     const [action, setAction] = useState();
+
     const [podName, setPodName] = useState();
-
     const [modalOpen, setModalOpen] = useState(false);
-    const modalHandleOpen = () => setModalOpen(!modalOpen);
 
+    const modalHandleOpen = () => setModalOpen(!modalOpen);
     const [alertOpen, setAlertOpen] = useState(false);
+
     const [type, setType] = useState('error');
     const [message, setMessage] = useState('');
     const alertHandleClose = (event, reason) => {
@@ -108,10 +109,33 @@ const CardBody = ({json, index, restore, changeRestoreFalse, timer}) => {
         setAlertOpen(false);
     };
 
+    const [excludeStatus, setExcludeStatus] = useState(false);
+    const [excludePodIndex, setExcludePodIndex] = useState(0);
+
+    useInterval(() => {
+        axios.post(API + `/lb?service=${json.service}`, {
+            data: json
+        }).then((resp) => {
+            // console.log(new Date(), "useInterval> timer:", timer, excludeStatus, excludePodIndex, resp.data);
+            json.node.map((node, nodeIndex) => {
+                nodeIndex === index ? node.podList.map((pod, podIndex) => {
+                    if (resp.data[nodeIndex] === pod.name) {
+                        setExcludeStatus(true);
+                        setExcludePodIndex(podIndex);
+                        changeRestoreFalse();
+                    }
+                }) : null
+            })
+        });
+    },  timer)
+
+    // const [disable, setDisable] = useState(true);
+
     const exclude = (podName) => {
         setAction('exclude');
         setPodName(podName);
         modalHandleOpen();
+        // setDisable(false);
     }
 
     const deploy = (podName) => {
@@ -133,36 +157,21 @@ const CardBody = ({json, index, restore, changeRestoreFalse, timer}) => {
         );
     }
 
-    useInterval(() => {
-        axios.post(API + `/lb?service=${json.service}`, {
-            data: json
-        }).then((resp) => {
-            json.node.map((node, nodeIndex) => {
-                nodeIndex === index ? node.podList.map((pod, podIndex) => {
-                    if (resp.data.message === pod.name) {
-                        console.log(pod.name + " exclude");
-                    }
-                }) : null
-            })
-        });
-    }, 10000)
-
     return (
         <Grid container>
             {json.node.map((node, nodeIndex) => (
-                nodeIndex === index ? node.podList.map((pod) => (
-                    <Grid key={pod} xs={12} md={6} xl={6}>
+                nodeIndex === index ? node.podList.map((pod, podIndex) => (
+                    <Grid
+                        key={pod} xs={12} md={6} xl={6}>
                         <Box
-                            /*className={restore === true ? styles.box : excludeStatus === false ? styles.box
-                                : podIndex === podIndex ? styles.excludeBox : styles.box}*/
-                            className={styles.box}
+                            className={restore === true ? styles.box : excludeStatus === false ? styles.box
+                                : podIndex === excludePodIndex ? styles.excludeBox : styles.box}
                         >
                             <Grid container>
                                 <Grid xs={12} className={styles.mL}>
                                     <div className={styles.podTitle}>
-                                        {/*{restore === true ? pod.name : excludeStatus === false ? pod.name
-                                            : podIndex === podIndex ? pod.name + " Exclude" : pod.name}*/}
-                                        {pod.name}
+                                        {restore === true ? pod.name : excludeStatus === false ? pod.name
+                                            : podIndex === excludePodIndex ? pod.name + " Exclude" : pod.name}
                                     </div>
                                 </Grid>
                                 <Grid xs={4}>
@@ -181,6 +190,7 @@ const CardBody = ({json, index, restore, changeRestoreFalse, timer}) => {
                                         variant={"contained"}
                                         size={"small"}
                                         color={"primary"}
+                                        // disabled={disable}
                                         onClick={() => deploy(pod.name)}
                                         className={styles.mL}
                                     >
@@ -226,20 +236,20 @@ const CardBody = ({json, index, restore, changeRestoreFalse, timer}) => {
 
 export default function PodCard({json, node, index}) {
     const [restore, setRestore] = useState(false);
-    const [intervalTimer, setIntervalTimer] = useState(300000);
+    const [intervalTimer, setIntervalTimer] = useState(5000); // 30초
 
     const changeRestoreTrue = () => {
         setRestore(true);
-        setIntervalTimer(300000);
+        // setIntervalTimer(30000); // 30초
     }
 
     const changeRestoreFalse = () => {
         setRestore(false);
-        setIntervalTimer(1000);
+        // setIntervalTimer(3000); // 3초
 
-        setTimeout(() => {
-            setIntervalTimer(60000);
-        }, 30000);
+        // setTimeout(() => {
+        //     setIntervalTimer(60000);
+        // }, 30000);
     }
 
     return (
