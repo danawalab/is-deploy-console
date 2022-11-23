@@ -11,27 +11,24 @@ import useInterval from "../../service/useInterval";
 
 const API = 'http://localhost:3000/api/agent/'
 
-const CardHeader = ({json, node, changeRestore}) => {
-    const [open, setOpen] = useState(false);
-    const [type, setType] = useState('error');
-    const [message, setMessage] = useState('');
-    const handleClose = (event, reason) => {
-        if (reason === 'clickaway') {
-            return;
-        }
-        setOpen(false);
-    };
-
+const CardHeader = ({
+                        json,
+                        node,
+                        changeRestore,
+                        setAlertOpen,
+                        setAlertType,
+                        setAlertMessage
+                    }) => {
     const restore = async () => {
         await axios.get(API + `/restore?service=${json.service}&node=${node}`)
             .then((resp) => {
-                setMessage(JSON.stringify(resp.data.message));
-                setType('success');
-                setOpen(true)
+                setAlertMessage(JSON.stringify(resp.data.message));
+                setAlertType('success');
+                setAlertOpen(true)
                 if (resp.data.error !== undefined) {
-                    setMessage(JSON.stringify(resp.data.error));
-                    setType('error');
-                    setOpen(true)
+                    setAlertMessage(JSON.stringify(resp.data.error));
+                    setAlertType('error');
+                    setAlertOpen(true)
                 }
             });
         changeRestore();
@@ -40,13 +37,13 @@ const CardHeader = ({json, node, changeRestore}) => {
     const healthCheck = async () => {
         await axios.get(API + `/health?service=${json.service}&node=${node}`)
             .then((resp) => {
-                setMessage(JSON.stringify(resp.data.message));
-                setType('success');
-                setOpen(true)
+                setAlertMessage(JSON.stringify(resp.data.message));
+                setAlertType('success');
+                setAlertOpen(true)
                 if (resp.data.error !== undefined) {
-                    setMessage(JSON.stringify(resp.data.error));
-                    setType('error');
-                    setOpen(true)
+                    setAlertMessage(JSON.stringify(resp.data.error));
+                    setAlertType('error');
+                    setAlertOpen(true)
                 }
             });
     }
@@ -80,34 +77,26 @@ const CardHeader = ({json, node, changeRestore}) => {
                 >
                     Agent Health Check
                 </Button>
-                <CustomAlert
-                    open={open}
-                    onClose={handleClose}
-                    type={type}
-                    message={message}
-                />
             </Grid>
         </Grid>
     );
 }
 
-const CardBody = ({json, index, restore, changeRestoreFalse, timer}) => {
+const CardBody = ({
+                      json,
+                      index,
+                      restore,
+                      changeRestoreFalse,
+                      timer,
+                      setAlertOpen,
+                      setAlertType,
+                      setAlertMessage
+                  }) => {
     const [action, setAction] = useState();
 
     const [podName, setPodName] = useState();
     const [modalOpen, setModalOpen] = useState(false);
-
     const modalHandleOpen = () => setModalOpen(!modalOpen);
-    const [alertOpen, setAlertOpen] = useState(false);
-
-    const [type, setType] = useState('error');
-    const [message, setMessage] = useState('');
-    const alertHandleClose = (event, reason) => {
-        if (reason === 'clickaway') {
-            return;
-        }
-        setAlertOpen(false);
-    };
 
     const [excludeStatus, setExcludeStatus] = useState(false);
     const [excludePodIndex, setExcludePodIndex] = useState(0);
@@ -116,26 +105,31 @@ const CardBody = ({json, index, restore, changeRestoreFalse, timer}) => {
         axios.post(API + `/lb?service=${json.service}`, {
             data: json
         }).then((resp) => {
-            // console.log(new Date(), "useInterval> timer:", timer, excludeStatus, excludePodIndex, resp.data);
             json.node.map((node, nodeIndex) => {
                 nodeIndex === index ? node.podList.map((pod, podIndex) => {
-                    if (resp.data[nodeIndex] === pod.name) {
+                    if (resp.data[nodeIndex].message === pod.name) {
                         setExcludeStatus(true);
                         setExcludePodIndex(podIndex);
                         changeRestoreFalse();
+                    } else if (resp.data[nodeIndex].error !== undefined) {
+                        const error = resp.data[nodeIndex].error;
+                        setAlertMessage(node.name + " is " + error);
+                        setAlertType('error');
+                        setAlertOpen(true)
+                    } else if (resp.data[nodeIndex].name === 'Error') {
+                        setAlertMessage(node.name + " Agent is Not Connect");
+                        setAlertType('error');
+                        setAlertOpen(true)
                     }
                 }) : null
-            })
+            });
         });
-    },  timer)
-
-    // const [disable, setDisable] = useState(true);
+    }, timer)
 
     const exclude = (podName) => {
         setAction('exclude');
         setPodName(podName);
         modalHandleOpen();
-        // setDisable(false);
     }
 
     const deploy = (podName) => {
@@ -179,6 +173,8 @@ const CardBody = ({json, index, restore, changeRestoreFalse, timer}) => {
                                         variant={"contained"}
                                         size={"small"}
                                         color={"error"}
+                                        disabled={restore === true ? false : excludeStatus === false ? false
+                                            : podIndex !== excludePodIndex}
                                         onClick={() => exclude(pod.name)}
                                         className={styles.mL}
                                     >
@@ -190,7 +186,8 @@ const CardBody = ({json, index, restore, changeRestoreFalse, timer}) => {
                                         variant={"contained"}
                                         size={"small"}
                                         color={"primary"}
-                                        // disabled={disable}
+                                        disabled={restore === true ? true : excludeStatus === false ? true
+                                            : podIndex !== excludePodIndex}
                                         onClick={() => deploy(pod.name)}
                                         className={styles.mL}
                                     >
@@ -216,14 +213,8 @@ const CardBody = ({json, index, restore, changeRestoreFalse, timer}) => {
                                     node={node.name}
                                     pod={podName}
                                     setAlertOpen={setAlertOpen}
-                                    setType={setType}
-                                    setMessage={setMessage}
-                                />
-                                <CustomAlert
-                                    open={alertOpen}
-                                    onClose={alertHandleClose}
-                                    type={type}
-                                    message={message}
+                                    setAlertType={setAlertType}
+                                    setAlertMessage={setAlertMessage}
                                 />
                             </Grid>
                         </Box>
@@ -234,9 +225,16 @@ const CardBody = ({json, index, restore, changeRestoreFalse, timer}) => {
     );
 }
 
-export default function PodCard({json, node, index}) {
+export default function PodCard({
+                                    json,
+                                    node,
+                                    index,
+                                    setAlertOpen,
+                                    setAlertType,
+                                    setAlertMessage
+                                }) {
     const [restore, setRestore] = useState(false);
-    const [intervalTimer, setIntervalTimer] = useState(5000); // 30초
+    const [intervalTimer, setIntervalTimer] = useState(5000); // 5초
 
     const changeRestoreTrue = () => {
         setRestore(true);
@@ -261,6 +259,9 @@ export default function PodCard({json, node, index}) {
                             json={json}
                             node={node}
                             changeRestore={changeRestoreTrue}
+                            setAlertOpen={setAlertOpen}
+                            setAlertType={setAlertType}
+                            setAlertMessage={setAlertMessage}
                         />
                     </CardContent>
                     <Divider/>
@@ -271,6 +272,9 @@ export default function PodCard({json, node, index}) {
                             restore={restore}
                             changeRestoreFalse={changeRestoreFalse}
                             timer={intervalTimer}
+                            setAlertOpen={setAlertOpen}
+                            setAlertType={setAlertType}
+                            setAlertMessage={setAlertMessage}
                         />
                     </CardContent>
                 </Card>

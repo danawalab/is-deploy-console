@@ -20,7 +20,11 @@ export default function handler(req, res) {
                 case 'health':
                     axios.get(API + '/health-check')
                         .then((resp) => {
-                            return res.status(200).json(resp.data);
+                            if (resp.data.error !== undefined) {
+                                return res.status(200).json(resp.data);
+                            } else {
+                                return res.status(200).json(resp.data);
+                            }
                         })
                         .catch(() => {
                             return res.status(200).json({
@@ -31,7 +35,11 @@ export default function handler(req, res) {
                 case 'restore' :
                     axios.put(API + '/load-balance/restore')
                         .then((resp) => {
-                            return res.status(200).json(resp.data);
+                            if (resp.data.error !== undefined) {
+                                return res.status(200).json(resp.data);
+                            } else {
+                                return res.status(200).json(resp.data);
+                            }
                         })
                         .catch(() => {
                             return res.status(200).json({
@@ -40,17 +48,29 @@ export default function handler(req, res) {
                         });
                     break;
                 case 'lb':
-                    let ret = []
+                    let responses = []
                     for (let node of req.body.data.node) {
-                        let resp = await axios.get(`${node.agent.host}${node.agent.port}/load-balance`);
-                        ret.push(resp.data.message)
+                        try {
+                            let resp = await axios.get(`${node.agent.host}${node.agent.port}/load-balance`);
+                            if (resp.data.error !== undefined) {
+                                responses.push(resp.data);
+                            } else {
+                                responses.push(resp.data)
+                            }
+                        } catch (error) {
+                            responses.push(error);
+                        }
                     }
-                    res.status(200).json(ret);
+                    res.status(200).json(responses);
                     break;
                 case 'exclude':
                     axios.put(API + `/load-balance/exclude?worker=${POD}`)
                         .then((resp) => {
-                            return res.status(200).json(resp.data);
+                            if (resp.data.error !== undefined) {
+                                return res.status(200).json(resp.data);
+                            } else {
+                                return res.status(200).json(resp.data);
+                            }
                         })
                         .catch(() => {
                             return res.status(200).json({
@@ -61,7 +81,11 @@ export default function handler(req, res) {
                 case 'deploy':
                     axios.put(API + `/webapp/deploy?worker=${POD}`)
                         .then((resp) => {
-                            return res.status(200).json(resp.data);
+                            if (resp.data.error !== undefined) {
+                                return res.status(200).json(resp.data);
+                            } else {
+                                return res.status(200).json(resp.data);
+                            }
                         })
                         .catch(() => {
                             return res.status(200).json({
@@ -72,7 +96,11 @@ export default function handler(req, res) {
                 case 'log':
                     axios.get(API + `/logs/tail/n?worker=${POD}&line=100`)
                         .then((resp) => {
-                            return res.status(200).json(resp.data);
+                            if (resp.data.error !== undefined) {
+                                return res.status(200).json(resp.data);
+                            } else {
+                                return res.status(200).json(resp.data);
+                            }
                         })
                         .catch(() => {
                             return res.status(200).json({
@@ -85,28 +113,35 @@ export default function handler(req, res) {
                         case 'GET':
                             axios.get(API + `/sync`)
                                 .then((resp) => {
-                                    return res.status(200).json(resp.data.data);
+                                    if (resp.data.error !== undefined) {
+                                        return res.status(200).json(resp.data);
+                                    } else {
+                                        return res.status(200).json(resp.data.data);
+                                    }
                                 })
                                 .catch(() => {
                                     return res.status(200).json({
                                         error: "Not Connect",
                                     });
                                 });
-                            ;
                             break;
                         case 'PUT':
-                            JSON.parse(req.body.data).node.map((node) => {
-                                axios.put(
-                                    `${node.agent.host}${node.agent.port}/sync`,
-                                    JSON.stringify(node, null, 2)
-                                ).then((resp) => {
-                                    return res.status(200).json(resp.data);
-                                }).catch(() => {
-                                    return res.status(200).json({
-                                        error: "Not Connect",
-                                    });
-                                });
-                            });
+                            let responses = []
+                            for (let node of JSON.parse(req.body.data).node) {
+                                try {
+                                    let resp = await axios.put(`${node.agent.host}${node.agent.port}/sync`,
+                                        JSON.stringify(node, null, 2)
+                                    );
+                                    if (resp.data.error !== undefined) {
+                                        responses.push(resp.data);
+                                    } else {
+                                        responses.push(resp.data)
+                                    }
+                                } catch (error) {
+                                    responses.push(error);
+                                }
+                            }
+                            res.status(200).json(responses);
                             break;
                     }
                     break;

@@ -13,20 +13,20 @@ export default function ConfirmModal({
                                          node,
                                          pod,
                                          setAlertOpen,
-                                         setType,
-                                         setMessage
+                                         setAlertType,
+                                         setAlertMessage
                                      }) {
     const QUERY = `?service=${service}&node=${node}`;
 
     const exclude = () => {
         axios.post(API + '/exclude' + QUERY + `&pod=${pod}`)
             .then((resp) => {
-                setMessage(JSON.stringify(resp.data.message));
-                setType('success');
+                setAlertMessage(JSON.stringify(resp.data.message));
+                setAlertType('success');
                 setAlertOpen(true)
                 if (resp.data.error !== undefined) {
-                    setMessage(JSON.stringify(resp.data.error));
-                    setType('error');
+                    setAlertMessage(JSON.stringify(resp.data.error));
+                    setAlertType('error');
                     setAlertOpen(true)
                 }
             });
@@ -36,12 +36,12 @@ export default function ConfirmModal({
     const deploy = () => {
         axios.post(API + '/deploy' + QUERY + `&pod=${pod}`)
             .then((resp) => {
-                setMessage(JSON.stringify(resp.data.message));
-                setType('success');
+                setAlertMessage(JSON.stringify(resp.data.message));
+                setAlertType('success');
                 setAlertOpen(true)
                 if (resp.data.error !== undefined) {
-                    setMessage(JSON.stringify(resp.data.error));
-                    setType('error');
+                    setAlertMessage(JSON.stringify(resp.data.error));
+                    setAlertType('error');
                     setAlertOpen(true)
                 }
             });
