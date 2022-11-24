@@ -20,9 +20,11 @@ export default function LogArea({service, node, pod}) {
     useInterval(async () => {
         await axios.post(API + '/log' + QUERY + `&pod=${pod}`)
             .then((resp) => {
-                setLogData(resp.data);
                 if (resp.data.error !== undefined) {
-                    setLogData(resp.data.error);
+                    setLogData(JSON.stringify(resp.data.error));
+                } else {
+                    // log는 text로 반환하기에 resp.data를 바로 setLogData에 넣어줌
+                    setLogData(resp.data);
                 }
             });
     }, 5000)
