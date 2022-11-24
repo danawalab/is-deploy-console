@@ -1,6 +1,11 @@
 import axios from "axios";
 import fs from "fs";
 
+/**
+ * Agent 통신
+ * @param req
+ * @param res
+ */
 export default function handler(req, res) {
     const SERVICE = req.query.service;
     const NODE = req.query.node;
@@ -16,6 +21,15 @@ export default function handler(req, res) {
                 .reduce(nodes => nodes.agent) : '';
             const API = NODE !== undefined ? `${agent.agent.host}${agent.agent.port}` : '';
 
+            /**
+             * 공통 error 가 undefined가 아닐경우
+             * Agent에서 error 발생 후 { "error" : 에러내용" } 으로 반환
+             * 그대로 받아서 return
+             * 반대로 error 가 없으면 Agent에 error 없음
+             * { "message" : 내용 } 으로 반환 그대로 받아서 return
+             * catch는 Console에서 Agent의 host와 port가 잘못되거나 Agent가 죽어서 연결 안 될 경우
+             * { "error" : "Not Connect" }로 return
+             */
             switch (req.query.agent) {
                 case 'health':
                     axios.get(API + '/health-check')

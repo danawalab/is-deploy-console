@@ -3,6 +3,7 @@ import fs from 'fs';
 export default function handler(req, res) {
 
     const QUERY = req.query.service;
+    // 새 서비스 등록시 기본 JSON
     const INIT_JSON = {
         "service": QUERY,
         "node": []

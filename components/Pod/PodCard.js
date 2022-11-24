@@ -1,12 +1,11 @@
-import {Box, Button, Card, CardContent, Divider, Typography} from "@mui/material";
+import {Box, Button, Card, CardContent, CircularProgress, Divider, Fade, Typography} from "@mui/material";
 import Grid from '@mui/material/Unstable_Grid2'
 import styles from "./_podCard.module.scss";
 import * as React from "react";
-import {useEffect, useState} from "react";
+import {useState} from "react";
 import axios from "axios";
 import {router} from "next/router";
 import ConfirmModal from "../Modal/ConfirmModal";
-import CustomAlert from "../alert/CustomAlert";
 import useInterval from "../../service/useInterval";
 
 const API = 'http://localhost:3000/api/agent/'
@@ -17,8 +16,11 @@ const CardHeader = ({
                         changeRestore,
                         setAlertOpen,
                         setAlertType,
-                        setAlertMessage
+                        setAlertMessage,
+                        query,
+                        setQuery
                     }) => {
+
     const restore = async () => {
         await axios.get(API + `/restore?service=${json.service}&node=${node}`)
             .then((resp) => {
@@ -32,6 +34,7 @@ const CardHeader = ({
                 }
             });
         changeRestore();
+        setQuery('idle');
     }
 
     const healthCheck = async () => {
@@ -57,6 +60,23 @@ const CardHeader = ({
                 >
                     {node}
                 </Typography>
+                <Box sx={{height: 40}}>
+                    {query === 'success' ? (
+                        <Typography>Success!</Typography>
+                    ) : query === 'faild' ? (
+                        <Typography>Faild!</Typography>
+                    ) : (
+                        <Fade
+                            in={query === 'progress'}
+                            style={{
+                                transitionDelay: query === 'progress' ? '800ms' : '0ms',
+                            }}
+                            unmountOnExit
+                        >
+                            <CircularProgress/>
+                        </Fade>
+                    )}
+                </Box>
             </Grid>
             <Grid xs={6} md={4} xl={4}>
                 <Button
@@ -90,7 +110,9 @@ const CardBody = ({
                       timer,
                       setAlertOpen,
                       setAlertType,
-                      setAlertMessage
+                      setAlertMessage,
+                      query,
+                      setQuery
                   }) => {
     const [action, setAction] = useState();
 
@@ -101,6 +123,7 @@ const CardBody = ({
     const [excludeStatus, setExcludeStatus] = useState(false);
     const [excludePodIndex, setExcludePodIndex] = useState(0);
 
+    // 5초마다 Agent 상태 갱신
     useInterval(() => {
         axios.post(API + `/lb?service=${json.service}`, {
             data: json
@@ -111,25 +134,37 @@ const CardBody = ({
                         setExcludeStatus(true);
                         setExcludePodIndex(podIndex);
                         changeRestoreFalse();
+                        setQuery('success');
                     } else if (resp.data[nodeIndex].error !== undefined) {
-                        const error = resp.data[nodeIndex].error;
+                        const error = JSON.stringify(resp.data[nodeIndex].error);
                         setAlertMessage(node.name + " is " + error);
                         setAlertType('error');
                         setAlertOpen(true)
+                        setQuery('faild');
                     } else if (resp.data[nodeIndex].name === 'Error') {
                         setAlertMessage(node.name + " Agent is Not Connect");
                         setAlertType('error');
                         setAlertOpen(true)
+                        setQuery('faild');
                     }
                 }) : null
             });
         });
     }, timer)
 
+    const handleClickQuery = () => {
+        if (query !== 'idle') {
+            setQuery('idle');
+            return;
+        }
+        setQuery('progress');
+    };
+
     const exclude = (podName) => {
         setAction('exclude');
         setPodName(podName);
         modalHandleOpen();
+        handleClickQuery();
     }
 
     const deploy = (podName) => {
@@ -236,6 +271,8 @@ export default function PodCard({
     const [restore, setRestore] = useState(false);
     const [intervalTimer, setIntervalTimer] = useState(5000); // 5초
 
+    const [query, setQuery] = React.useState('idle');
+
     const changeRestoreTrue = () => {
         setRestore(true);
         // setIntervalTimer(30000); // 30초
@@ -262,6 +299,8 @@ export default function PodCard({
                             setAlertOpen={setAlertOpen}
                             setAlertType={setAlertType}
                             setAlertMessage={setAlertMessage}
+                            query={query}
+                            setQuery={setQuery}
                         />
                     </CardContent>
                     <Divider/>
@@ -275,6 +314,8 @@ export default function PodCard({
                             setAlertOpen={setAlertOpen}
                             setAlertType={setAlertType}
                             setAlertMessage={setAlertMessage}
+                            query={query}
+                            setQuery={setQuery}
                         />
                     </CardContent>
                 </Card>

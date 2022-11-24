@@ -26,7 +26,6 @@ export default function ServiceHome({data}) {
         setAlertOpen(false);
     };
 
-
     return (
         <Layout title={json.service}>
             <Box sx={{flexGrow: 1}} className={styles.body}>
