@@ -63,8 +63,8 @@ const CardHeader = ({
                 <Box sx={{height: 40}}>
                     {query === 'success' ? (
                         <Typography>Success!</Typography>
-                    ) : query === 'faild' ? (
-                        <Typography>Faild!</Typography>
+                    ) : query === 'failed' ? (
+                        <Typography>Failed!</Typography>
                     ) : (
                         <Fade
                             in={query === 'progress'}
@@ -140,12 +140,12 @@ const CardBody = ({
                         setAlertMessage(node.name + " is " + error);
                         setAlertType('error');
                         setAlertOpen(true)
-                        setQuery('faild');
+                        setQuery('failed');
                     } else if (resp.data[nodeIndex].name === 'Error') {
                         setAlertMessage(node.name + " Agent is Not Connect");
                         setAlertType('error');
                         setAlertOpen(true)
-                        setQuery('faild');
+                        setQuery('failed');
                     }
                 }) : null
             });
