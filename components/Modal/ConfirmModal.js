@@ -3,8 +3,6 @@ import axios from "axios";
 import {Box, Button, Divider, Modal, Typography} from "@mui/material";
 import styles from "./_modal.module.scss";
 
-const API = 'http://localhost:3000/api/agent/'
-
 export default function ConfirmModal({
                                          open,
                                          onClose,
@@ -16,6 +14,8 @@ export default function ConfirmModal({
                                          setAlertType,
                                          setAlertMessage
                                      }) {
+
+    const API = 'http://localhost:3000/api/agent/';
     const QUERY = `?service=${service}&node=${node}`;
 
     const exclude = () => {

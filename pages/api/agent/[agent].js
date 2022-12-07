@@ -124,6 +124,10 @@ export default function handler(req, res) {
                     break;
                 case 'sync':
                     switch (req.method) {
+                        /**
+                         * deprecated
+                         * GET Method 사용 안하고 있음
+                         */
                         case 'GET':
                             axios.get(API + `/sync`)
                                 .then((resp) => {
@@ -156,6 +160,39 @@ export default function handler(req, res) {
                                 }
                             }
                             res.status(200).json(responses);
+                            break;
+                    }
+                    break;
+                case 'update':
+                    switch (req.method) {
+                        case 'GET':
+                            let responses = []
+                            for (let node of JSON.parse(req.body.data).node) {
+                                try {
+                                    let resp = await axios.get(API + "/update/version");
+
+                                    if (resp.data.error !== undefined) {
+                                        responses.push(resp.data);
+                                    } else {
+                                        responses.push(resp.data)
+                                    }
+                                } catch (error) {
+                                    responses.push(error);
+                                }
+                            }
+                            res.status(200).json(responses);
+                            
+                            break;
+                        case 'POST':
+                            axios.put(API + `/update/${req.query.version}`)
+                                .then((resp) => {
+
+                                })
+                                .catch(() => {
+                                    return res.status(200).json({
+                                        error: "Not Connect",
+                                    });
+                                });
                             break;
                     }
                     break;
