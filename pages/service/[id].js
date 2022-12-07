@@ -8,12 +8,23 @@ import JsonModal from "../../components/Modal/JsonModal";
 import Init from "../../components/Layout/Init";
 import axios from "axios";
 import styles from "../_index.module.scss";
+import CustomAlert from "../../components/alert/CustomAlert";
 
 export default function ServiceHome({data}) {
     const [open, setOpen] = useState(false);
     const handleOpen = () => setOpen(!open);
     const json = JSON.parse(data);
     const nodeLength = json.node.length;
+
+    const [alertOpen, setAlertOpen] = useState(false);
+    const [alertType, setAlertType] = useState('error');
+    const [alertMessage, setAlertMessage] = useState('');
+    const handleClose = (event, reason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+        setAlertOpen(false);
+    };
 
     return (
         <Layout title={json.service}>
@@ -31,6 +42,9 @@ export default function ServiceHome({data}) {
                             onClose={handleOpen}
                             data={data}
                             service={json.service}
+                            setAlertOpen={setAlertOpen}
+                            setAlertType={setAlertType}
+                            setAlertMessage={setAlertMessage}
                         />
                     </Grid>
                     {nodeLength !== 0 ? json.node.map((node, index) => (
@@ -39,11 +53,19 @@ export default function ServiceHome({data}) {
                                 json={json}
                                 node={node.name}
                                 index={index}
+                                setAlertOpen={setAlertOpen}
+                                setAlertType={setAlertType}
+                                setAlertMessage={setAlertMessage}
                             />
                         </Grid>
                     )) : <Init/>}
                 </Grid>
-                <Divider/>
+                <CustomAlert
+                    open={alertOpen}
+                    onClose={handleClose}
+                    type={alertType}
+                    message={alertMessage}
+                />
             </Box>
         </Layout>
     );

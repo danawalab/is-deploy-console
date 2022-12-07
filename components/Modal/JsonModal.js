@@ -5,12 +5,20 @@ import styles from './_modal.module.scss'
 import axios from "axios";
 
 
-export default function JsonModal({open, onClose, data, service}) {
+export default function JsonModal({
+                                      open,
+                                      onClose,
+                                      data,
+                                      service,
+                                      setAlertOpen,
+                                      setAlertType,
+                                      setAlertMessage
+                                  }) {
     const [textAreaOpen, setTextAreaOpen] = useState(true);
     const handleTextArea = () => setTextAreaOpen(!textAreaOpen);
     const [json, setJson] = useState();
     const API = `http://localhost:3000/api/${service.toLowerCase()}`;
-    const AGENT_API =  `http://localhost:3000/api/agent/sync?service=${service}`;
+    const AGENT_API = `http://localhost:3000/api/agent/sync?service=${service}`;
 
     useEffect(() => {
         setJson(data);
@@ -20,13 +28,13 @@ export default function JsonModal({open, onClose, data, service}) {
      * 수정한 json을 저장한다.
      * @returns {Promise<void>}
      */
-    const save =  () => {
+    const save = () => {
         if (service === 'config') {
-             axios.put(API, {
+            axios.put(API, {
                 data: json,
             });
         } else {
-             axios.put(API, {
+            axios.put(API, {
                 data: json,
             });
 

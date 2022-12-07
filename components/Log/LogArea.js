@@ -16,11 +16,16 @@ export default function LogArea({service, node, pod}) {
     }
 
     // 5초에 로그 100줄 다시 불러옴
-    //todo 5초뒤 로그 불러오면 덮어 쓰는게 아닌 append 형식으로 변경
+    //todo 100줄이 아닌 동적으로 원하는 줄 불러오게
     useInterval(async () => {
         await axios.post(API + '/log' + QUERY + `&pod=${pod}`)
             .then((resp) => {
-                setLogData(resp.data)
+                if (resp.data.error !== undefined) {
+                    setLogData(JSON.stringify(resp.data.error));
+                } else {
+                    // log는 text로 반환하기에 resp.data를 바로 setLogData에 넣어줌
+                    setLogData(resp.data);
+                }
             });
     }, 5000)
 
