@@ -165,11 +165,11 @@ export default function handler(req, res) {
                     break;
                 case 'update':
                     switch (req.method) {
-                        case 'GET':
+                        case 'POST':
                             let responses = []
-                            for (let node of JSON.parse(req.body.data).node) {
+                            for (let node of req.body.data.node) {
                                 try {
-                                    let resp = await axios.get(API + "/update/version");
+                                    let resp = await axios.get(`${node.agent.host}${node.agent.port}/update/version`);
 
                                     if (resp.data.error !== undefined) {
                                         responses.push(resp.data);
@@ -181,9 +181,9 @@ export default function handler(req, res) {
                                 }
                             }
                             res.status(200).json(responses);
-                            
                             break;
-                        case 'POST':
+                        case 'PUT':
+                            console.log(req.query.version)
                             axios.put(API + `/update/${req.query.version}`)
                                 .then((resp) => {
 
