@@ -15,7 +15,7 @@ export default function ConfirmModal({
                                          setAlertMessage
                                      }) {
 
-    const API = 'http://localhost:3000/api/agent/';
+    const API = '/api/agent/';
     const QUERY = `?service=${service}&node=${node}`;
 
     const exclude = () => {

@@ -5,7 +5,7 @@ import axios from "axios";
 import {useState} from "react";
 import useInterval from "../../service/useInterval";
 
-const API = 'http://localhost:3000/api/agent/'
+const API = '/api/agent/'
 
 export default function LogArea({service, node, pod}) {
     const [logData, setLogData] = useState();

@@ -47,7 +47,7 @@ export default function Home({data}) {
 }
 
 export async function getServerSideProps() {
-    const res = await axios.get("http://localhost:3000/api/config");
+    const res = await axios.get('http://localhost:3000/api/config');
     const data = await res.data;
 
     return {

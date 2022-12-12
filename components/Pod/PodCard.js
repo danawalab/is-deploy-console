@@ -2,17 +2,19 @@ import {Box, Button, Card, CardContent, CircularProgress, Divider, Fade, Typogra
 import Grid from '@mui/material/Unstable_Grid2'
 import styles from "./_podCard.module.scss";
 import * as React from "react";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import axios from "axios";
 import {router} from "next/router";
 import ConfirmModal from "../Modal/ConfirmModal";
 import useInterval from "../../service/useInterval";
+import UpdateModal from "../Modal/UpdateModal";
 
-const API = 'http://localhost:3000/api/agent/'
+const API = '/api/agent/'
 
 const CardHeader = ({
                         json,
                         node,
+                        index,
                         changeRestore,
                         setAlertOpen,
                         setAlertType,
@@ -21,6 +23,8 @@ const CardHeader = ({
                         setQuery
                     }) => {
 
+    const [modalOpen, setModalOpen] = useState(false);
+    const modalHandleOpen = () => setModalOpen(!modalOpen);
     const restore = async () => {
         await axios.get(API + `/restore?service=${json.service}&node=${node}`)
             .then((resp) => {
@@ -50,6 +54,34 @@ const CardHeader = ({
                 }
             });
     }
+
+    const updateAgent = () => {
+        modalHandleOpen();
+    }
+
+    useEffect(() => {
+        axios.get("/api/update")
+            .then((resp) => {
+                const version = resp.data;
+
+                axios.post(API + `/update?service=${json.service}`, {
+                    data: json
+                }).then((resp) => {
+                    json.node.map((node, nodeIndex) => {
+                        if (nodeIndex === index) {
+                            const agentVersion = resp.data[nodeIndex];
+                            console.log(agentVersion);
+                            if (version !== agentVersion) {
+                                setAlertMessage('Agent New Version Upload, Please Update Agent');
+                                setAlertType('success');
+                                setAlertOpen(true)
+                            }
+                        }
+                    })
+                })
+            })
+    }, [])
+
 
     return (
         <Grid container>
@@ -97,6 +129,21 @@ const CardHeader = ({
                 >
                     Agent Health Check
                 </Button>
+                <Button
+                    variant={"contained"}
+                    size={"small"}
+                    color={"primary"}
+                    onClick={updateAgent}
+                    className={styles.btn}
+                >
+                    Agent Update
+                </Button>
+                <UpdateModal
+                    open={modalOpen}
+                    onClose={modalHandleOpen}
+                    service={json.service}
+                    node={node}
+                />
             </Grid>
         </Grid>
     );
@@ -295,6 +342,7 @@ export default function PodCard({
                         <CardHeader
                             json={json}
                             node={node}
+                            index={index}
                             changeRestore={changeRestoreTrue}
                             setAlertOpen={setAlertOpen}
                             setAlertType={setAlertType}
