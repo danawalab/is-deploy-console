@@ -47,6 +47,7 @@ export default function JsonModal({
 
     const close = () => {
         onClose();
+        location.reload();
     }
 
     // 모달창 꺼지면 수정 비홯성화
