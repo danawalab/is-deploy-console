@@ -8,6 +8,7 @@ import {router} from "next/router";
 import ConfirmModal from "../Modal/ConfirmModal";
 import useInterval from "../../service/useInterval";
 import UpdateModal from "../Modal/UpdateModal";
+import Link from "next/link";
 
 const API = '/api/agent/'
 
@@ -220,19 +221,6 @@ const CardBody = ({
         modalHandleOpen();
     }
 
-    const log = (service, node, pod) => {
-        router.push({
-                pathname: `/service/log/${pod}?service=${service}&node=${node}`,
-                query: {
-                    service: service,
-                    node: node,
-                    pod: pod,
-                },
-            },
-            `/service/log/${pod}?service=${service}&node=${node}`
-        );
-    }
-
     return (
         <Grid container>
             {json.node.map((node, nodeIndex) => (
@@ -277,15 +265,27 @@ const CardBody = ({
                                     </Button>
                                 </Grid>
                                 <Grid xs={4}>
-                                    <Button
-                                        variant={"contained"}
-                                        size={"small"}
-                                        color={"success"}
-                                        onClick={() => log(json.service, node.name, pod.name)}
-                                        className={styles.mL}
-                                    >
-                                        Log
-                                    </Button>
+                                    <Link
+                                        href={{
+                                            pathname: `/service/log/${pod.name}`,
+                                            query: {
+                                                service: json.service,
+                                                node: node.name,
+                                                pod: pod.name,
+                                            }
+                                        }}
+                                        passHref>
+                                        <a target={"_blank"} rel={"noopener noreferrer"}>
+                                            <Button
+                                                variant={"contained"}
+                                                size={"small"}
+                                                color={"success"}
+                                                className={styles.mL}
+                                            >
+                                                Log
+                                            </Button>
+                                        </a>
+                                    </Link>
                                 </Grid>
                                 <ConfirmModal
                                     open={modalOpen}
