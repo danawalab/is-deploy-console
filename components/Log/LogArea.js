@@ -1,4 +1,4 @@
-import {Button, Grid, TextareaAutosize} from "@mui/material";
+import {Button, Grid, TextareaAutosize, TextField} from "@mui/material";
 import styles from './_logArea.module.scss'
 import * as React from "react";
 import axios from "axios";
@@ -10,15 +10,19 @@ const API = '/api/agent/'
 export default function LogArea({service, node, pod}) {
     const [logData, setLogData] = useState();
     const QUERY = `?service=${service}&node=${node}`
+    const [line, setLine] = useState(100);
 
     const logInit = () => {
         setLogData('');
     }
 
+    const changeVersion = (e) => {
+        setLine(e.target.value);
+    }
+
     // 5초에 로그 100줄 다시 불러옴
-    //todo 100줄이 아닌 동적으로 원하는 줄 불러오게
     useInterval(async () => {
-        await axios.post(API + '/log' + QUERY + `&pod=${pod}`)
+        await axios.post(API + '/log' + QUERY + `&pod=${pod}&line=${line}`)
             .then((resp) => {
                 if (resp.data.error !== undefined) {
                     setLogData(JSON.stringify(resp.data.error));
@@ -40,6 +44,13 @@ export default function LogArea({service, node, pod}) {
                 />
             </Grid>
             <Grid item xs={12}>
+                <TextField
+                    id="outlined-basic"
+                    label="line"
+                    variant="outlined"
+                    onChange={(e) => changeVersion(e)}
+                    className={styles.btn}
+                />
                 <Button
                     variant={"contained"}
                     color={"success"}

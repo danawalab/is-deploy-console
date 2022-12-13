@@ -13,7 +13,7 @@ export default function UpdateModal({
 
     const API = '/api/agent/';
     const QUERY = `?service=${service}&node=${node}`;
-    // const REGEX = '/([1-9]).([0-9]|[1-9][0-9]).([0-9])/';
+    // const REGEX = '/([1-9]).([0-9]|[1-9][0-9]).([0-9])/'; //버전 정규식
 
     const [version, setVersion] = useState('');
 

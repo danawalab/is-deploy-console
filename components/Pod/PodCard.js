@@ -73,7 +73,7 @@ const CardHeader = ({
                             const agentVersion = resp.data[nodeIndex];
                             console.log(agentVersion);
                             if (version !== agentVersion) {
-                                setAlertMessage('Agent New Version Upload, Please Update Agent');
+                                setAlertMessage('새 버전의 에이전트가 나왔습니다, 업데이트를 권장합니다');
                                 setAlertType('success');
                                 setAlertOpen(true)
                             }
@@ -95,9 +95,9 @@ const CardHeader = ({
                 </Typography>
                 <Box sx={{height: 40}}>
                     {query === 'success' ? (
-                        <Typography>Success!</Typography>
+                        <Typography>성공!</Typography>
                     ) : query === 'failed' ? (
-                        <Typography>Failed!</Typography>
+                        <Typography>실패!</Typography>
                     ) : (
                         <Fade
                             in={query === 'progress'}
@@ -119,7 +119,7 @@ const CardHeader = ({
                     onClick={restore}
                     className={styles.btn}
                 >
-                    Restore
+                    연결복원
                 </Button>
                 <Button
                     variant={"contained"}
@@ -128,7 +128,7 @@ const CardHeader = ({
                     onClick={healthCheck}
                     className={styles.btn}
                 >
-                    Agent Health Check
+                    에이전트 헬스체크
                 </Button>
                 <Button
                     variant={"contained"}
@@ -137,7 +137,7 @@ const CardHeader = ({
                     onClick={updateAgent}
                     className={styles.btn}
                 >
-                    Agent Update
+                    에이전트 업데이트
                 </Button>
                 <UpdateModal
                     open={modalOpen}
@@ -190,7 +190,7 @@ const CardBody = ({
                         setAlertOpen(true)
                         setQuery('failed');
                     } else if (resp.data[nodeIndex].name === 'Error') {
-                        setAlertMessage(node.name + " Agent is Not Connect");
+                        setAlertMessage(node.name + " 에이전트가 연결이 안 됐습니다");
                         setAlertType('error');
                         setAlertOpen(true)
                         setQuery('failed');
@@ -248,7 +248,7 @@ const CardBody = ({
                                         onClick={() => exclude(pod.name)}
                                         className={styles.mL}
                                     >
-                                        Exclude
+                                        제외하기
                                     </Button>
                                 </Grid>
                                 <Grid xs={4}>
@@ -261,7 +261,7 @@ const CardBody = ({
                                         onClick={() => deploy(pod.name)}
                                         className={styles.mL}
                                     >
-                                        Deploy
+                                        배포하기
                                     </Button>
                                 </Grid>
                                 <Grid xs={4}>
@@ -275,14 +275,18 @@ const CardBody = ({
                                             }
                                         }}
                                         passHref>
-                                        <a target={"_blank"} rel={"noopener noreferrer"}>
+                                        <a
+                                            target={"_blank"}
+                                            rel={"noopener noreferrer"}
+                                            className={styles.a}
+                                        >
                                             <Button
                                                 variant={"contained"}
                                                 size={"small"}
                                                 color={"success"}
                                                 className={styles.mL}
                                             >
-                                                Log
+                                                로그보기
                                             </Button>
                                         </a>
                                     </Link>

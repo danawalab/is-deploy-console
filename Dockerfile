@@ -1,17 +1,15 @@
-FROM node:16
+FROM node:16-alpine
 
-RUN apt-get update && apt-get install -y yarn
-
-WORKDIR /home/is-deploy-console
+WORKDIR /tmp/is-deploy-console
 
 COPY package.json ./
 
-RUN yarn
+RUN npm install
 
 COPY ./ ./
 
-RUN yarn build
+RUN npm run build
 
 EXPOSE 3000
 
-CMD ["yarn", "start"]
+CMD ["npm", "start"]

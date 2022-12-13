@@ -63,7 +63,7 @@ export default function ConfirmModal({
             >
                 <Box className={styles.box}>
                     <Typography className={styles.title}>
-                        정말 {pod}을 {action} 하시겠습니까?
+                        정말 {pod}을 {action==='exclude'?'제외':'배포'} 하시겠습니까?
                     </Typography>
                     <Divider className={styles.divider}/>
                     <Box className={styles.boxArea}>

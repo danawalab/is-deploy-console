@@ -108,7 +108,8 @@ export default function handler(req, res) {
                         });
                     break;
                 case 'log':
-                    axios.get(API + `/logs/tail/n?worker=${POD}&line=100`)
+                    const line = req.query.line;
+                    axios.get(API + `/logs/tail/n?worker=${POD}&line=${line}`)
                         .then((resp) => {
                             if (resp.data.error !== undefined) {
                                 return res.status(200).json(resp.data);
@@ -183,7 +184,6 @@ export default function handler(req, res) {
                             res.status(200).json(responses);
                             break;
                         case 'PUT':
-                            console.log(req.query.version)
                             axios.put(API + `/update/${req.query.version}`)
                                 .then((resp) => {
 
