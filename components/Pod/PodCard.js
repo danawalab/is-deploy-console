@@ -2,9 +2,8 @@ import {Box, Button, Card, CardContent, CircularProgress, Divider, Fade, Typogra
 import Grid from '@mui/material/Unstable_Grid2'
 import styles from "./_podCard.module.scss";
 import * as React from "react";
-import {useEffect, useState} from "react";
+import {useState} from "react";
 import axios from "axios";
-import {router} from "next/router";
 import ConfirmModal from "../Modal/ConfirmModal";
 import useInterval from "../../service/useInterval";
 import UpdateModal from "../Modal/UpdateModal";
@@ -56,33 +55,38 @@ const CardHeader = ({
             });
     }
 
-    const updateAgent = () => {
-        modalHandleOpen();
-    }
+    /**
+     *  에이전트 동적 업데이트 및 다운그레이드 기능
+     *  update.sh 불안정 해서 잠시 기능 삭제
+     *  중요 !! 사내에서 사용시 보안 정책 확인 필요
+     *  빌드 파일 깃허브, 깃랩, 미니오등 어디에 올리든 보안정책에 의해 443포트 닫혀 있다면 동작 x
+     */
+    /*    const updateAgent = () => {
+            modalHandleOpen();
+        }
 
-    useEffect(() => {
-        axios.get("/api/update")
-            .then((resp) => {
-                const version = resp.data;
+        useEffect(() => {
+            axios.get("/api/update")
+                .then((resp) => {
+                    const version = resp.data;
 
-                axios.post(API + `/update?service=${json.service}`, {
-                    data: json
-                }).then((resp) => {
-                    json.node.map((node, nodeIndex) => {
-                        if (nodeIndex === index) {
-                            const agentVersion = resp.data[nodeIndex];
-                            console.log(agentVersion);
-                            if (version !== agentVersion) {
-                                setAlertMessage('Agent New Version Upload, Please Update Agent');
-                                setAlertType('success');
-                                setAlertOpen(true)
+                    axios.post(API + `/update?service=${json.service}`, {
+                        data: json
+                    }).then((resp) => {
+                        json.node.map((node, nodeIndex) => {
+                            if (nodeIndex === index) {
+                                const agentVersion = resp.data[nodeIndex];
+                                console.log(agentVersion);
+                                if (version !== agentVersion) {
+                                    setAlertMessage('새 버전의 에이전트가 나왔습니다, 업데이트를 권장합니다');
+                                    setAlertType('success');
+                                    setAlertOpen(true)
+                                }
                             }
-                        }
+                        })
                     })
                 })
-            })
-    }, [])
-
+        }, [])*/
 
     return (
         <Grid container>
@@ -95,9 +99,9 @@ const CardHeader = ({
                 </Typography>
                 <Box sx={{height: 40}}>
                     {query === 'success' ? (
-                        <Typography>Success!</Typography>
+                        <Typography>성공!</Typography>
                     ) : query === 'failed' ? (
-                        <Typography>Failed!</Typography>
+                        <Typography>실패!</Typography>
                     ) : (
                         <Fade
                             in={query === 'progress'}
@@ -119,7 +123,7 @@ const CardHeader = ({
                     onClick={restore}
                     className={styles.btn}
                 >
-                    Restore
+                    연결복원
                 </Button>
                 <Button
                     variant={"contained"}
@@ -128,17 +132,18 @@ const CardHeader = ({
                     onClick={healthCheck}
                     className={styles.btn}
                 >
-                    Agent Health Check
+                    에이전트 헬스체크
                 </Button>
-                <Button
+                {/*<Button
                     variant={"contained"}
                     size={"small"}
                     color={"primary"}
                     onClick={updateAgent}
+                    // disabled={true}
                     className={styles.btn}
                 >
-                    Agent Update
-                </Button>
+                    에이전트 업데이트
+                </Button>*/}
                 <UpdateModal
                     open={modalOpen}
                     onClose={modalHandleOpen}
@@ -190,7 +195,7 @@ const CardBody = ({
                         setAlertOpen(true)
                         setQuery('failed');
                     } else if (resp.data[nodeIndex].name === 'Error') {
-                        setAlertMessage(node.name + " Agent is Not Connect");
+                        setAlertMessage(node.name + " 에이전트가 연결이 안 됐습니다");
                         setAlertType('error');
                         setAlertOpen(true)
                         setQuery('failed');
@@ -212,7 +217,6 @@ const CardBody = ({
         setAction('exclude');
         setPodName(podName);
         modalHandleOpen();
-        handleClickQuery();
     }
 
     const deploy = (podName) => {
@@ -248,7 +252,7 @@ const CardBody = ({
                                         onClick={() => exclude(pod.name)}
                                         className={styles.mL}
                                     >
-                                        Exclude
+                                        제외하기
                                     </Button>
                                 </Grid>
                                 <Grid xs={4}>
@@ -261,7 +265,7 @@ const CardBody = ({
                                         onClick={() => deploy(pod.name)}
                                         className={styles.mL}
                                     >
-                                        Deploy
+                                        배포하기
                                     </Button>
                                 </Grid>
                                 <Grid xs={4}>
@@ -275,14 +279,18 @@ const CardBody = ({
                                             }
                                         }}
                                         passHref>
-                                        <a target={"_blank"} rel={"noopener noreferrer"}>
+                                        <a
+                                            target={"_blank"}
+                                            rel={"noopener noreferrer"}
+                                            className={styles.a}
+                                        >
                                             <Button
                                                 variant={"contained"}
                                                 size={"small"}
                                                 color={"success"}
                                                 className={styles.mL}
                                             >
-                                                Log
+                                                로그보기
                                             </Button>
                                         </a>
                                     </Link>
@@ -297,6 +305,7 @@ const CardBody = ({
                                     setAlertOpen={setAlertOpen}
                                     setAlertType={setAlertType}
                                     setAlertMessage={setAlertMessage}
+                                    handleClickQuery={handleClickQuery}
                                 />
                             </Grid>
                         </Box>
@@ -318,7 +327,7 @@ export default function PodCard({
     const [restore, setRestore] = useState(false);
     const [intervalTimer, setIntervalTimer] = useState(5000); // 5초
 
-    const [query, setQuery] = React.useState('idle');
+    const [query, setQuery] = useState('idle');
 
     const changeRestoreTrue = () => {
         setRestore(true);

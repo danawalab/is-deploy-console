@@ -8,7 +8,7 @@ export default function PodLog({data}) {
     const pod = data.pod;
 
     return (
-        <Layout title={pod}>
+        <Layout title={`${service} > ${node} > ${pod} 의 로그`}>
             <LogArea
                 service={service}
                 node={node}

@@ -60,8 +60,8 @@ export default function JsonModal({
             <Modal
                 open={open}
                 onClose={onClose}
-                aria-labelledby="modal-modal-title"
-                aria-describedby="modal-modal-description"
+                aria-labelledby={"modal-modal-title"}
+                aria-describedby={"modal-modal-description"}
                 className={styles.modal}
             >
                 <Box className={styles.box}>

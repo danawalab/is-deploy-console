@@ -1,5 +1,9 @@
 .idea
 .github
 .next
-node_modules
+/node_modules
+/test
+jest.setup.js
+next-env.d.ts
+README.md
 yarn.lock

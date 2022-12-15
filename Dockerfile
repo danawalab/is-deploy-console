@@ -1,17 +1,15 @@
-FROM node:16
-
-RUN apt-get update && apt-get install -y yarn
+FROM node:16-slim
 
 WORKDIR /home/is-deploy-console
 
-COPY package.json ./
+COPY package.json .
 
-RUN yarn
+RUN npm install --legacy-peer-deps
 
-COPY ./ ./
+COPY . .
 
-RUN yarn build
+RUN npm run build
 
 EXPOSE 3000
 
-CMD ["yarn", "start"]
+CMD ["npm", "start"]

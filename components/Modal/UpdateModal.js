@@ -13,7 +13,7 @@ export default function UpdateModal({
 
     const API = '/api/agent/';
     const QUERY = `?service=${service}&node=${node}`;
-    // const REGEX = '/([1-9]).([0-9]|[1-9][0-9]).([0-9])/';
+    // const REGEX = '/([1-9]).([0-9]|[1-9][0-9]).([0-9])/'; //버전 정규식
 
     const [version, setVersion] = useState('');
 
@@ -24,7 +24,6 @@ export default function UpdateModal({
     const update = () => {
         axios.put(API + '/update' + QUERY + "&version=" + version)
             .then((resp) => {
-
             });
         close();
     }
@@ -38,20 +37,22 @@ export default function UpdateModal({
             <Modal
                 open={open}
                 onClose={onClose}
-                aria-labelledby="modal-modal-title"
-                aria-describedby="modal-modal-description"
+                aria-labelledby={"modal-modal-title"}
+                aria-describedby={"modal-modal-description"}
                 className={styles.modal}
             >
                 <Box className={styles.box}>
-                    <TextField
-                        id="outlined-basic"
-                        label="version"
-                        variant="outlined"
-                        onChange={(e) => changeVersion(e)}
-                    />
                     <Typography className={styles.title}>
                         정말 {node}의 에이전트를 업데이트/롤백 하시겠습니까?
                     </Typography>
+                    <TextField
+                        id={"outlined-basic"}
+                        label={"version"}
+                        variant={"outlined"}
+                        size={"small"}
+                        onChange={(e) => changeVersion(e)}
+                        className={styles.textField}
+                    />
                     <Divider className={styles.divider}/>
                     <Box className={styles.boxArea}>
                         <Button
