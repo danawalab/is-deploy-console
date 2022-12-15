@@ -4,9 +4,17 @@
   width: 98%;
   min-width: 98%;
   max-width: 98%;
-  min-height: 600px;
+  //min-height: 600px;
+  //max-height: 1000px;
+  //height: calc(100vh - 100px);
+  //height: auto;
+}
+
+.textField {
+  margin: 20px;
 }
 
 .btn {
   margin: 20px;
+  float: right;
 }

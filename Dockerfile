@@ -1,12 +1,12 @@
-FROM node:16-alpine
+FROM node:16-slim
 
-WORKDIR /tmp/is-deploy-console
+WORKDIR /home/is-deploy-console
 
-COPY package.json ./
+COPY package.json .
 
-RUN npm install
+RUN npm install --legacy-peer-deps
 
-COPY ./ ./
+COPY . .
 
 RUN npm run build
 

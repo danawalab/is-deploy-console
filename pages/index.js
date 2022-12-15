@@ -12,7 +12,7 @@ export default function Home({data}) {
     const [open, setOpen] = useState(false);
     const handleOpen = () => setOpen(!open);
     const json = JSON.parse(data);
-    const title = "Is Deploy Console";
+    const title = "개발자 자동 배포 관리 도구";
 
     return (
         <Layout title={title}>

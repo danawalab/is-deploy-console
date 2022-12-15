@@ -5,18 +5,17 @@ import axios from "axios";
 import {useState} from "react";
 import useInterval from "../../service/useInterval";
 
-const API = '/api/agent/'
-
 export default function LogArea({service, node, pod}) {
-    const [logData, setLogData] = useState();
+    const API = '/api/agent/'
     const QUERY = `?service=${service}&node=${node}`
+    const [logData, setLogData] = useState('로그는 5초에 1번씩 불러옵니다.\n최대 로그수 제한에 값이 없다면 기본 값인 100줄로 로그를 반환 받습니다.');
     const [line, setLine] = useState(100);
 
     const logInit = () => {
         setLogData('');
     }
 
-    const changeVersion = (e) => {
+    const changeLine = (e) => {
         setLine(e.target.value);
     }
 
@@ -38,18 +37,20 @@ export default function LogArea({service, node, pod}) {
             <Grid item xs={12}>
                 <TextareaAutosize
                     disabled={true}
-                    maxRows={2}
+                    maxRows={50}
                     value={logData}
                     className={styles.area}
                 />
             </Grid>
             <Grid item xs={12}>
                 <TextField
-                    id="outlined-basic"
-                    label="line"
-                    variant="outlined"
-                    onChange={(e) => changeVersion(e)}
-                    className={styles.btn}
+                    id={"outlined-basic"}
+                    size={"small"}
+                    label={"최대 로그수 제한"}
+                    variant={"outlined"}
+                    value={line}
+                    onChange={(e) => changeLine(e)}
+                    className={styles.textField}
                 />
                 <Button
                     variant={"contained"}

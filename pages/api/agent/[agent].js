@@ -28,7 +28,7 @@ export default function handler(req, res) {
              * 반대로 error 가 없으면 Agent에 error 없음
              * { "message" : 내용 } 으로 반환 그대로 받아서 return
              * catch는 Console에서 Agent의 host와 port가 잘못되거나 Agent가 죽어서 연결 안 될 경우
-             * { "error" : "Not Connect" }로 return
+             * { "error" : "연결 안됨" }로 return
              */
             switch (req.query.agent) {
                 case 'health':
@@ -42,7 +42,7 @@ export default function handler(req, res) {
                         })
                         .catch(() => {
                             return res.status(200).json({
-                                error: "Not Connect",
+                                error: "연결 안됨",
                             });
                         });
                     break;
@@ -57,7 +57,7 @@ export default function handler(req, res) {
                         })
                         .catch(() => {
                             return res.status(200).json({
-                                error: "Not Connect",
+                                error: "연결 안됨",
                             });
                         });
                     break;
@@ -88,12 +88,13 @@ export default function handler(req, res) {
                         })
                         .catch(() => {
                             return res.status(200).json({
-                                error: "Not Connect",
+                                error: "연결 안됨",
                             });
                         });
                     break;
                 case 'deploy':
-                    axios.put(API + `/webapp/deploy?worker=${POD}`)
+                    const version = req.query.version;
+                    axios.put(API + `/webapp/deploy?worker=${POD}&version=${version}`)
                         .then((resp) => {
                             if (resp.data.error !== undefined) {
                                 return res.status(200).json(resp.data);
@@ -103,7 +104,7 @@ export default function handler(req, res) {
                         })
                         .catch(() => {
                             return res.status(200).json({
-                                error: "Not Connect",
+                                error: "연결 안됨",
                             });
                         });
                     break;
@@ -119,7 +120,7 @@ export default function handler(req, res) {
                         })
                         .catch(() => {
                             return res.status(200).json({
-                                error: "Not Connect",
+                                error: "연결 안됨",
                             });
                         });
                     break;
@@ -140,7 +141,7 @@ export default function handler(req, res) {
                                 })
                                 .catch(() => {
                                     return res.status(200).json({
-                                        error: "Not Connect",
+                                        error: "연결 안됨",
                                     });
                                 });
                             break;
@@ -190,7 +191,7 @@ export default function handler(req, res) {
                                 })
                                 .catch(() => {
                                     return res.status(200).json({
-                                        error: "Not Connect",
+                                        error: "연결 안됨",
                                     });
                                 });
                             break;

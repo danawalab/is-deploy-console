@@ -1,7 +1,8 @@
 import * as React from "react";
 import axios from "axios";
-import {Box, Button, Divider, Modal, Typography} from "@mui/material";
+import {Box, Button, Divider, Modal, TextField, Typography} from "@mui/material";
 import styles from "./_modal.module.scss";
+import {useState} from "react";
 
 export default function ConfirmModal({
                                          open,
@@ -12,13 +13,21 @@ export default function ConfirmModal({
                                          pod,
                                          setAlertOpen,
                                          setAlertType,
-                                         setAlertMessage
+                                         setAlertMessage,
+                                         handleClickQuery
                                      }) {
 
     const API = '/api/agent/';
     const QUERY = `?service=${service}&node=${node}`;
 
+    const [version, setVersion] = useState();
+
+    const changeVersion = (e) => {
+        setVersion(e.target.value);
+    }
+
     const exclude = () => {
+        handleClickQuery();
         axios.post(API + '/exclude' + QUERY + `&pod=${pod}`)
             .then((resp) => {
                 setAlertMessage(JSON.stringify(resp.data.message));
@@ -34,18 +43,24 @@ export default function ConfirmModal({
     }
 
     const deploy = () => {
-        axios.post(API + '/deploy' + QUERY + `&pod=${pod}`)
-            .then((resp) => {
-                setAlertMessage(JSON.stringify(resp.data.message));
-                setAlertType('success');
-                setAlertOpen(true)
-                if (resp.data.error !== undefined) {
-                    setAlertMessage(JSON.stringify(resp.data.error));
-                    setAlertType('error');
+        if (version === undefined || version === null) {
+            setAlertMessage('버전 파라미터를 적어주세요');
+            setAlertType('error');
+            setAlertOpen(true)
+        } else {
+            axios.post(API + '/deploy' + QUERY + `&pod=${pod}&version=${version}`)
+                .then((resp) => {
+                    setAlertMessage(JSON.stringify(resp.data.message));
+                    setAlertType('success');
                     setAlertOpen(true)
-                }
-            });
-        close();
+                    if (resp.data.error !== undefined) {
+                        setAlertMessage(JSON.stringify(resp.data.error));
+                        setAlertType('error');
+                        setAlertOpen(true)
+                    }
+                });
+            close();
+        }
     }
 
     const close = () => {
@@ -57,14 +72,24 @@ export default function ConfirmModal({
             <Modal
                 open={open}
                 onClose={onClose}
-                aria-labelledby="modal-modal-title"
-                aria-describedby="modal-modal-description"
+                aria-labelledby={"modal-modal-title"}
+                aria-describedby={"modal-modal-description"}
                 className={styles.modal}
             >
                 <Box className={styles.box}>
                     <Typography className={styles.title}>
-                        정말 {pod}을 {action==='exclude'?'제외':'배포'} 하시겠습니까?
+                        정말 {pod}을 {action === 'exclude' ? '제외' : '배포'} 하시겠습니까?
                     </Typography>
+                    {action !== 'exclude' ? (
+                        <TextField
+                            id={"outlined-basic"}
+                            label={"버전 파라미터"}
+                            variant={"outlined"}
+                            size={"small"}
+                            onChange={(e) => changeVersion(e)}
+                            className={styles.textField}
+                        />
+                    ) : <></>}
                     <Divider className={styles.divider}/>
                     <Box className={styles.boxArea}>
                         <Button
