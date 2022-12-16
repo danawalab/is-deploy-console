@@ -37,7 +37,8 @@ export default function LogArea({service, node, pod}) {
             <Grid item xs={12}>
                 <TextareaAutosize
                     disabled={true}
-                    maxRows={50}
+                    minRows={30}
+                    maxRows={40}
                     value={logData}
                     className={styles.area}
                 />
