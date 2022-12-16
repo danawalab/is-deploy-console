@@ -20,10 +20,10 @@ export default function ConfirmModal({
     const API = '/api/agent/';
     const QUERY = `?service=${service}&node=${node}`;
 
-    const [version, setVersion] = useState();
+    const [parameters, setParameters] = useState();
 
-    const changeVersion = (e) => {
-        setVersion(e.target.value);
+    const changeParameters = (e) => {
+        setParameters(e.target.value);
     }
 
     const exclude = () => {
@@ -43,12 +43,12 @@ export default function ConfirmModal({
     }
 
     const deploy = () => {
-        if (version === undefined || version === null) {
-            setAlertMessage('버전 파라미터를 적어주세요');
+        if (parameters === undefined || parameters === null) {
+            setAlertMessage('인수 값을 넣어주세요, 인수 값이 없다면 스페이스를 누르고 확인을 눌러주세요');
             setAlertType('error');
             setAlertOpen(true)
         } else {
-            axios.post(API + '/deploy' + QUERY + `&pod=${pod}&version=${version}`)
+            axios.post(API + '/deploy' + QUERY + `&pod=${pod}&parameters=${parameters}`)
                 .then((resp) => {
                     setAlertMessage(JSON.stringify(resp.data.message));
                     setAlertType('success');
@@ -83,10 +83,10 @@ export default function ConfirmModal({
                     {action !== 'exclude' ? (
                         <TextField
                             id={"outlined-basic"}
-                            label={"버전 파라미터"}
+                            label={"쉘스크립트 인수 값"}
                             variant={"outlined"}
                             size={"small"}
-                            onChange={(e) => changeVersion(e)}
+                            onChange={(e) => changeParameters(e)}
                             className={styles.textField}
                         />
                     ) : <></>}

@@ -1,6 +1,7 @@
 import axios from "axios";
 import fs from "fs";
 
+
 /**
  * Agent 통신
  * @param req
@@ -11,6 +12,20 @@ export default function handler(req, res) {
     const NODE = req.query.node;
     const POD = req.query.pod;
     const PATH = `./config/service/${SERVICE}/${SERVICE}.json`;
+
+    const ip = req.headers['x-forwarded-for'] ||  req.connection.remoteAddress;
+    const krTime = new Intl.DateTimeFormat('ko-KR', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour12: false,
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+    }).format(new Date())
+    const date = new Date(krTime).toISOString().split('T')[0];
+    const time = new Date(krTime).toTimeString().split(' ')[0];
+    console.log(`${date}-${time} : ${ip} 에서 ${req.query.agent} 를 ${req.method} 메소드로 호출 하였습니다.`);
 
     fs.readFile(PATH, 'utf-8', async (err, data) => {
         if (err !== null) {
@@ -93,8 +108,8 @@ export default function handler(req, res) {
                         });
                     break;
                 case 'deploy':
-                    const version = req.query.version;
-                    axios.put(API + `/webapp/deploy?worker=${POD}&version=${version}`)
+                    const parameters = req.query.parameters;
+                    axios.put(API + `/webapp/deploy?worker=${POD}&arguments=${parameters}`)
                         .then((resp) => {
                             if (resp.data.error !== undefined) {
                                 return res.status(200).json(resp.data);
