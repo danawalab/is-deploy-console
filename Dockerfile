@@ -1,6 +1,6 @@
 FROM node:16-slim
 
-RUN apt-get update && apt-get install vim
+RUN apt-get update && apt-get install -y vim
 
 WORKDIR /home/is-deploy-console
 
