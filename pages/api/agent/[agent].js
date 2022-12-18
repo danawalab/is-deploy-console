@@ -1,6 +1,7 @@
 import axios from "axios";
 import fs from "fs";
 
+
 /**
  * Agent 통신
  * @param req
@@ -11,6 +12,7 @@ export default function handler(req, res) {
     const NODE = req.query.node;
     const POD = req.query.pod;
     const PATH = `./config/service/${SERVICE}/${SERVICE}.json`;
+    const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
 
     fs.readFile(PATH, 'utf-8', async (err, data) => {
         if (err !== null) {
@@ -32,7 +34,10 @@ export default function handler(req, res) {
              */
             switch (req.query.agent) {
                 case 'health':
-                    axios.get(API + '/health-check')
+                    const healthApi = API + '/health-check';
+                    agentLog(ip, healthApi, 'GET');
+
+                    axios.get(healthApi)
                         .then((resp) => {
                             if (resp.data.error !== undefined) {
                                 return res.status(200).json(resp.data);
@@ -47,7 +52,10 @@ export default function handler(req, res) {
                         });
                     break;
                 case 'restore' :
-                    axios.put(API + '/load-balance/restore')
+                    const restoreApi = API + '/load-balance/restore';
+                    agentLog(ip, restoreApi, 'PUT');
+
+                    axios.put(restoreApi)
                         .then((resp) => {
                             if (resp.data.error !== undefined) {
                                 return res.status(200).json(resp.data);
@@ -65,7 +73,10 @@ export default function handler(req, res) {
                     let responses = []
                     for (let node of req.body.data.node) {
                         try {
-                            let resp = await axios.get(`${node.agent.host}${node.agent.port}/load-balance`);
+                            let lbStatusApi = `${node.agent.host}${node.agent.port}/load-balance`;
+                            agentLog(ip, lbStatusApi, 'GET');
+
+                            let resp = await axios.get(lbStatusApi);
                             if (resp.data.error !== undefined) {
                                 responses.push(resp.data);
                             } else {
@@ -78,7 +89,10 @@ export default function handler(req, res) {
                     res.status(200).json(responses);
                     break;
                 case 'exclude':
-                    axios.put(API + `/load-balance/exclude?worker=${POD}`)
+                    const excludeApi = API + `/load-balance/exclude?worker=${POD}`;
+                    agentLog(ip, excludeApi, 'PUT');
+
+                    axios.put(excludeApi)
                         .then((resp) => {
                             if (resp.data.error !== undefined) {
                                 return res.status(200).json(resp.data);
@@ -93,8 +107,11 @@ export default function handler(req, res) {
                         });
                     break;
                 case 'deploy':
-                    const version = req.query.version;
-                    axios.put(API + `/webapp/deploy?worker=${POD}&version=${version}`)
+                    const parameters = req.query.parameters;
+                    const deployApi = API + `/webapp/deploy?worker=${POD}&arguments=${parameters}`;
+                    agentLog(ip, deployApi, 'PUT');
+
+                    axios.put(deployApi)
                         .then((resp) => {
                             if (resp.data.error !== undefined) {
                                 return res.status(200).json(resp.data);
@@ -110,7 +127,10 @@ export default function handler(req, res) {
                     break;
                 case 'log':
                     const line = req.query.line;
-                    axios.get(API + `/logs/tail/n?worker=${POD}&line=${line}`)
+                    const logApi = API + `/logs/tail/n?worker=${POD}&line=${line}`
+                    agentLog(ip, logApi, 'GET');
+
+                    axios.get(logApi)
                         .then((resp) => {
                             if (resp.data.error !== undefined) {
                                 return res.status(200).json(resp.data);
@@ -149,7 +169,10 @@ export default function handler(req, res) {
                             let responses = []
                             for (let node of JSON.parse(req.body.data).node) {
                                 try {
-                                    let resp = await axios.put(`${node.agent.host}${node.agent.port}/sync`,
+                                    let syncApi = `${node.agent.host}${node.agent.port}/sync`;
+                                    agentLog(ip, syncApi, 'PUT');
+
+                                    let resp = await axios.put(syncApi,
                                         JSON.stringify(node, null, 2)
                                     );
                                     if (resp.data.error !== undefined) {
@@ -171,8 +194,10 @@ export default function handler(req, res) {
                             let responses = []
                             for (let node of req.body.data.node) {
                                 try {
-                                    let resp = await axios.get(`${node.agent.host}${node.agent.port}/update/version`);
+                                    let updateCheckApi = `${node.agent.host}${node.agent.port}/update/version`;
+                                    agentLog(ip, updateCheckApi, 'GET');
 
+                                    let resp = await axios.get(updateCheckApi);
                                     if (resp.data.error !== undefined) {
                                         responses.push(resp.data);
                                     } else {
@@ -185,7 +210,10 @@ export default function handler(req, res) {
                             res.status(200).json(responses);
                             break;
                         case 'PUT':
-                            axios.put(API + `/update/${req.query.version}`)
+                            const updateApi = API + `/update/${req.query.version}`;
+                            agentLog(ip, updateApi, 'PUT');
+
+                            axios.put(updateApi)
                                 .then((resp) => {
 
                                 })
@@ -200,4 +228,20 @@ export default function handler(req, res) {
             }
         }
     });
+}
+
+function agentLog(ip, apiEndPoint, method) {
+    const koreaTime = new Intl.DateTimeFormat('ko-KR', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour12: false,
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+    }).format(new Date())
+    const date = new Date(koreaTime).toISOString().split('T')[0];
+    const time = new Date(koreaTime).toTimeString().split(' ')[0];
+
+    console.log(`${date}-${time} : ${ip} 에서 ${apiEndPoint} 를 ${method} 메소드로 호출 하였습니다.`);
 }
