@@ -86,6 +86,7 @@ export default function ConfirmModal({
                             label={"쉘스크립트 인수 값"}
                             variant={"outlined"}
                             size={"small"}
+                            helperText={"인수 값이 여러 개일 경우 띄어쓰기를 통해서 주세요 ex) 5000 profile=prod -f"}
                             onChange={(e) => changeParameters(e)}
                             className={styles.textField}
                         />
