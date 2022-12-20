@@ -1,0 +1,13 @@
+variables:
+  IS_DEPLOY_CONSOLE: "is-deploy-console"
+
+stages:
+  - build
+
+build:
+  stage: build
+  image: docker:latest
+  script:
+    - docker build -t ${IS_DEPLOY_CONSOLE}:latest .
+    - docker tag ${IS_DEPLOY_CONSOLE}:latest ${CI_DOCKER_REGISTRY}/${IS_DEPLOY_CONSOLE}:latest
+    - docker push ${CI_DOCKER_REGISTRY}/${IS_DEPLOY_CONSOLE}:latest
