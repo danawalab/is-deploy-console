@@ -18,7 +18,7 @@ export default function ConfirmModal({
                                      }) {
 
     const API = '/api/agent/';
-    const QUERY = `?service=${service}&node=${node}`;
+    const query = `?service=${service}&node=${node}`;
 
     const [parameters, setParameters] = useState();
 
@@ -28,7 +28,7 @@ export default function ConfirmModal({
 
     const exclude = () => {
         handleClickQuery();
-        axios.post(API + '/exclude' + QUERY + `&pod=${pod}`)
+        axios.post(API + '/exclude' + query + `&pod=${pod}`)
             .then((resp) => {
                 setAlertMessage(JSON.stringify(resp.data.message));
                 setAlertType('success');
@@ -48,18 +48,20 @@ export default function ConfirmModal({
             setAlertType('error');
             setAlertOpen(true)
         } else {
-            axios.post(API + '/deploy' + QUERY + `&pod=${pod}&parameters=${parameters}`)
+            axios.post(API + '/deploy' + query + `&pod=${pod}&parameters=${parameters}`)
                 .then((resp) => {
                     setAlertMessage(JSON.stringify(resp.data.message));
+                    // rsep.data.output
                     setAlertType('success');
                     setAlertOpen(true)
+                    close();
                     if (resp.data.error !== undefined) {
                         setAlertMessage(JSON.stringify(resp.data.error));
                         setAlertType('error');
                         setAlertOpen(true)
+                        close();
                     }
                 });
-            close();
         }
     }
 

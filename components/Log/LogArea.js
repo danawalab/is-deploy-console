@@ -7,7 +7,7 @@ import useInterval from "../../service/useInterval";
 
 export default function LogArea({service, node, pod}) {
     const API = '/api/agent/'
-    const QUERY = `?service=${service}&node=${node}`
+    const query = `?service=${service}&node=${node}`
     const [logData, setLogData] = useState('로그는 5초에 1번씩 불러옵니다.\n최대 로그수 제한에 값이 없다면 기본 값인 100줄로 로그를 반환 받습니다.');
     const [line, setLine] = useState(100);
 
@@ -21,7 +21,7 @@ export default function LogArea({service, node, pod}) {
 
     // 5초에 로그 100줄 다시 불러옴
     useInterval(async () => {
-        await axios.post(API + '/log' + QUERY + `&pod=${pod}&line=${line}`)
+        await axios.post(API + '/log' + query + `&pod=${pod}&line=${line}`)
             .then((resp) => {
                 if (resp.data.error !== undefined) {
                     setLogData(JSON.stringify(resp.data.error));

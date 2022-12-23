@@ -2,10 +2,10 @@ import fs from 'fs';
 
 export default function handler(req, res) {
 
-    const QUERY = req.query.service;
+    const query = req.query.service;
     // 새 서비스 등록시 기본 JSON
     const INIT_JSON = {
-        "service": QUERY,
+        "service": query,
         "node": []
     }
 
@@ -14,9 +14,9 @@ export default function handler(req, res) {
      * 아닐 경우 동적으로 경로가 지정된다 `./config/service/${req.query['service']}/${req.query['service']}.json`
      * @type {string|string}
      */
-    let path = QUERY === 'config' ?
+    let path = query === 'config' ?
         './config/config.json' :
-        `./config/service/${QUERY}/${QUERY.toLowerCase()}.json`;
+        `./config/service/${query}/${query.toLowerCase()}.json`;
 
     /**
      * json을 읽어 반환한다.
@@ -42,7 +42,7 @@ export default function handler(req, res) {
     function fileRead(path) {
         fs.readFile(path, 'utf-8', (err, data) => {
             if (err !== null) {
-                fs.mkdirSync(`./config/service/${QUERY}`);
+                fs.mkdirSync(`./config/service/${query}`);
                 fs.writeFileSync(path, JSON.stringify(INIT_JSON, null, 2), 'utf-8');
                 fileRead(path);
             } else {

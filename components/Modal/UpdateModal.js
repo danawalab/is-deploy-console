@@ -12,7 +12,7 @@ export default function UpdateModal({
                                     }) {
 
     const API = '/api/agent/';
-    const QUERY = `?service=${service}&node=${node}`;
+    const query = `?service=${service}&node=${node}`;
     // const REGEX = '/([1-9]).([0-9]|[1-9][0-9]).([0-9])/'; //버전 정규식
 
     const [version, setVersion] = useState('');
@@ -22,7 +22,7 @@ export default function UpdateModal({
     }
 
     const update = () => {
-        axios.put(API + '/update' + QUERY + "&version=" + version)
+        axios.put(API + '/update' + query + "&version=" + version)
             .then((resp) => {
             });
         close();
