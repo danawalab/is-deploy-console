@@ -61,7 +61,7 @@ export default function handler(req, res) {
                     break;
                 case 'deploy':
                     const parameters = req.query.parameters;
-                    const deployApi = API + `/deploy?worker=${pod}&arguments=${parameters}`;
+                    const deployApi = API + `/deploy/shell?worker=${pod}&arguments=${parameters}`;
                     agentLog(ip, deployApi, 'PUT');
                     deploy(req, res, deployApi);
                     break;
