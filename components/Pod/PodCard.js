@@ -98,21 +98,15 @@ const CardHeader = ({
                     {node}
                 </Typography>
                 <Box sx={{height: 40}}>
-                    {query === 'success' ? (
-                        <Typography>성공!</Typography>
-                    ) : query === 'failed' ? (
-                        <Typography>실패!</Typography>
-                    ) : (
-                        <Fade
-                            in={query === 'progress'}
-                            style={{
-                                transitionDelay: query === 'progress' ? '800ms' : '0ms',
-                            }}
-                            unmountOnExit
-                        >
-                            <CircularProgress/>
-                        </Fade>
-                    )}
+                    <Fade
+                        in={query === 'progress'}
+                        style={{
+                            transitionDelay: query === 'progress' ? '800ms' : '0ms',
+                        }}
+                        unmountOnExit
+                    >
+                        <CircularProgress/>
+                    </Fade>
                 </Box>
             </Grid>
             <Grid xs={6} md={4} xl={4}>
@@ -187,18 +181,18 @@ const CardBody = ({
                         setExcludeStatus(true);
                         setExcludePodIndex(podIndex);
                         changeRestoreFalse();
-                        setQuery('success');
+                        setQuery('idle');
                     } else if (resp.data[nodeIndex].error !== undefined) {
                         const error = JSON.stringify(resp.data[nodeIndex].error);
                         setAlertMessage(node.name + " is " + error);
                         setAlertType('error');
                         setAlertOpen(true)
-                        setQuery('failed');
+                        setQuery('idle');
                     } else if (resp.data[nodeIndex].name === 'Error') {
                         setAlertMessage(node.name + " 에이전트가 연결이 안 됐습니다");
                         setAlertType('error');
                         setAlertOpen(true)
-                        setQuery('failed');
+                        setQuery('idle');
                     }
                 }) : null
             });
@@ -239,7 +233,7 @@ const CardBody = ({
                                 <Grid xs={12} className={styles.mL}>
                                     <div className={styles.podTitle}>
                                         {restore === true ? pod.name : excludeStatus === false ? pod.name
-                                            : podIndex === excludePodIndex ? pod.name + " Exclude" : pod.name}
+                                            : podIndex === excludePodIndex ? pod.name + " 가 제외되었습니다" : pod.name}
                                     </div>
                                 </Grid>
                                 <Grid xs={4}>
