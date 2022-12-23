@@ -1,5 +1,13 @@
-import axios from "axios";
 import fs from "fs";
+import {restore} from "../../../service/api/restore";
+import {agentLog} from "../../../service/api/agentLog";
+import {agentHealthCheck} from "../../../service/api/health";
+import {loadBalance} from "../../../service/api/loadbalance";
+import {exclude} from "../../../service/api/exclude";
+import {deploy} from "../../../service/api/deploy";
+import {log} from "../../../service/api/log";
+import {setting} from "../../../service/api/setting";
+import {update} from "../../../service/api/update";
 
 
 /**
@@ -8,20 +16,20 @@ import fs from "fs";
  * @param res
  */
 export default function handler(req, res) {
-    const SERVICE = req.query.service;
-    const NODE = req.query.node;
-    const POD = req.query.pod;
-    const PATH = `./config/service/${SERVICE}/${SERVICE}.json`;
+    const service = req.query.service;
+    const node = req.query.node;
+    const pod = req.query.pod;
+    const path = `./config/service/${service}/${service}.json`;
     const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
 
-    fs.readFile(PATH, 'utf-8', async (err, data) => {
+    fs.readFile(path, 'utf-8', async (err, data) => {
         if (err !== null) {
             console.error(err);
         } else {
-            let agent = NODE !== undefined ? JSON.parse(data).node
-                .filter(nodes => nodes.name === NODE)
+            let agent = node !== undefined ? JSON.parse(data).node
+                .filter(nodes => nodes.name === node)
                 .reduce(nodes => nodes.agent) : '';
-            const API = NODE !== undefined ? `${agent.agent.host}${agent.agent.port}` : '';
+            const API = node !== undefined ? `${agent.agent.host}${agent.agent.port}/api/v1` : '';
 
             /**
              * 공통 error 가 undefined가 아닐경우
@@ -34,214 +42,44 @@ export default function handler(req, res) {
              */
             switch (req.query.agent) {
                 case 'health':
-                    const healthApi = API + '/health-check';
+                    const healthApi = API + '/health-check/agent';
                     agentLog(ip, healthApi, 'GET');
-
-                    axios.get(healthApi)
-                        .then((resp) => {
-                            if (resp.data.error !== undefined) {
-                                return res.status(200).json(resp.data);
-                            } else {
-                                return res.status(200).json(resp.data);
-                            }
-                        })
-                        .catch(() => {
-                            return res.status(200).json({
-                                error: "연결 안됨",
-                            });
-                        });
+                    agentHealthCheck(req, res, healthApi);
                     break;
                 case 'restore' :
                     const restoreApi = API + '/load-balance/restore';
                     agentLog(ip, restoreApi, 'PUT');
-
-                    axios.put(restoreApi)
-                        .then((resp) => {
-                            if (resp.data.error !== undefined) {
-                                return res.status(200).json(resp.data);
-                            } else {
-                                return res.status(200).json(resp.data);
-                            }
-                        })
-                        .catch(() => {
-                            return res.status(200).json({
-                                error: "연결 안됨",
-                            });
-                        });
+                    restore(req, res, restoreApi);
                     break;
                 case 'lb':
-                    let responses = []
-                    for (let node of req.body.data.node) {
-                        try {
-                            let lbStatusApi = `${node.agent.host}${node.agent.port}/load-balance`;
-                            agentLog(ip, lbStatusApi, 'GET');
-
-                            let resp = await axios.get(lbStatusApi);
-                            if (resp.data.error !== undefined) {
-                                responses.push(resp.data);
-                            } else {
-                                responses.push(resp.data)
-                            }
-                        } catch (error) {
-                            responses.push(error);
-                        }
-                    }
-                    res.status(200).json(responses);
+                    await loadBalance(req, res, ip);
                     break;
                 case 'exclude':
-                    const excludeApi = API + `/load-balance/exclude?worker=${POD}`;
+                    const excludeApi = API + `/load-balance/exclude?worker=${pod}`;
                     agentLog(ip, excludeApi, 'PUT');
-
-                    axios.put(excludeApi)
-                        .then((resp) => {
-                            if (resp.data.error !== undefined) {
-                                return res.status(200).json(resp.data);
-                            } else {
-                                return res.status(200).json(resp.data);
-                            }
-                        })
-                        .catch(() => {
-                            return res.status(200).json({
-                                error: "연결 안됨",
-                            });
-                        });
+                    exclude(req, res, excludeApi);
                     break;
                 case 'deploy':
                     const parameters = req.query.parameters;
-                    const deployApi = API + `/webapp/deploy?worker=${POD}&arguments=${parameters}`;
+                    const deployApi = API + `/deploy?worker=${pod}&arguments=${parameters}`;
                     agentLog(ip, deployApi, 'PUT');
-
-                    axios.put(deployApi)
-                        .then((resp) => {
-                            if (resp.data.error !== undefined) {
-                                return res.status(200).json(resp.data);
-                            } else {
-                                return res.status(200).json(resp.data);
-                            }
-                        })
-                        .catch(() => {
-                            return res.status(200).json({
-                                error: "연결 안됨",
-                            });
-                        });
+                    deploy(req, res, deployApi);
                     break;
                 case 'log':
                     const line = req.query.line;
-                    const logApi = API + `/logs/tail/n?worker=${POD}&line=${line}`
+                    const logApi = API + `/logs/tail/n?worker=${pod}&line=${line}`
                     agentLog(ip, logApi, 'GET');
-
-                    axios.get(logApi)
-                        .then((resp) => {
-                            if (resp.data.error !== undefined) {
-                                return res.status(200).json(resp.data);
-                            } else {
-                                return res.status(200).json(resp.data);
-                            }
-                        })
-                        .catch(() => {
-                            return res.status(200).json({
-                                error: "연결 안됨",
-                            });
-                        });
+                    log(req, res, logApi);
                     break;
-                case 'sync':
-                    switch (req.method) {
-                        /**
-                         * deprecated
-                         * GET Method 사용 안하고 있음
-                         */
-                        case 'GET':
-                            axios.get(API + `/sync`)
-                                .then((resp) => {
-                                    if (resp.data.error !== undefined) {
-                                        return res.status(200).json(resp.data);
-                                    } else {
-                                        return res.status(200).json(resp.data.data);
-                                    }
-                                })
-                                .catch(() => {
-                                    return res.status(200).json({
-                                        error: "연결 안됨",
-                                    });
-                                });
-                            break;
-                        case 'PUT':
-                            let responses = []
-                            for (let node of JSON.parse(req.body.data).node) {
-                                try {
-                                    let syncApi = `${node.agent.host}${node.agent.port}/sync`;
-                                    agentLog(ip, syncApi, 'PUT');
-
-                                    let resp = await axios.put(syncApi,
-                                        JSON.stringify(node, null, 2)
-                                    );
-                                    if (resp.data.error !== undefined) {
-                                        responses.push(resp.data);
-                                    } else {
-                                        responses.push(resp.data)
-                                    }
-                                } catch (error) {
-                                    responses.push(error);
-                                }
-                            }
-                            res.status(200).json(responses);
-                            break;
-                    }
+                case 'setting':
+                    await setting(req, res, ip);
                     break;
                 case 'update':
-                    switch (req.method) {
-                        case 'POST':
-                            let responses = []
-                            for (let node of req.body.data.node) {
-                                try {
-                                    let updateCheckApi = `${node.agent.host}${node.agent.port}/update/version`;
-                                    agentLog(ip, updateCheckApi, 'GET');
-
-                                    let resp = await axios.get(updateCheckApi);
-                                    if (resp.data.error !== undefined) {
-                                        responses.push(resp.data);
-                                    } else {
-                                        responses.push(resp.data)
-                                    }
-                                } catch (error) {
-                                    responses.push(error);
-                                }
-                            }
-                            res.status(200).json(responses);
-                            break;
-                        case 'PUT':
-                            const updateApi = API + `/update/${req.query.version}`;
-                            agentLog(ip, updateApi, 'PUT');
-
-                            axios.put(updateApi)
-                                .then((resp) => {
-
-                                })
-                                .catch(() => {
-                                    return res.status(200).json({
-                                        error: "연결 안됨",
-                                    });
-                                });
-                            break;
-                    }
+                    const updateApi = API + `/update/${req.query.version}`;
+                    agentLog(ip, updateApi, 'PUT');
+                    await update(req, res, updateApi, ip);
                     break;
             }
         }
     });
-}
-
-function agentLog(ip, apiEndPoint, method) {
-    const koreaTime = new Intl.DateTimeFormat('ko-KR', {
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit',
-        hour12: false,
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit',
-    }).format(new Date())
-    const date = new Date(koreaTime).toISOString().split('T')[0];
-    const time = new Date(koreaTime).toTimeString().split(' ')[0];
-
-    console.log(`${date}-${time} : ${ip} 에서 ${apiEndPoint} 를 ${method} 메소드로 호출 하였습니다.`);
 }
