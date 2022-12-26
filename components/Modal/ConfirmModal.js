@@ -14,7 +14,8 @@ export default function ConfirmModal({
                                          setAlertOpen,
                                          setAlertType,
                                          setAlertMessage,
-                                         handleClickQuery
+                                         handleClickQuery,
+                                         setShellLog
                                      }) {
 
     const API = '/api/agent/';
@@ -42,24 +43,23 @@ export default function ConfirmModal({
         close();
     }
 
-    const deploy = () => {
+    const deploy = async () => {
         if (parameters === undefined || parameters === null) {
             setAlertMessage('인수 값을 넣어주세요, 인수 값이 없다면 스페이스를 누르고 확인을 눌러주세요');
             setAlertType('error');
             setAlertOpen(true)
         } else {
-            axios.post(API + '/deploy' + query + `&pod=${pod}&parameters=${parameters}`)
+            close();
+            await axios.post(API + '/deploy' + query + `&pod=${pod}&parameters=${parameters}`)
                 .then((resp) => {
                     setAlertMessage(JSON.stringify(resp.data.message));
-                    // rsep.data.output
+                    setShellLog(resp.data.output)
                     setAlertType('success');
                     setAlertOpen(true)
-                    close();
                     if (resp.data.error !== undefined) {
                         setAlertMessage(JSON.stringify(resp.data.error));
                         setAlertType('error');
                         setAlertOpen(true)
-                        close();
                     }
                 });
         }

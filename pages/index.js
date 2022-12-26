@@ -7,11 +7,12 @@ import NodeCard from "../components/Node/NodeCard";
 import JsonModal from "../components/Modal/JsonModal";
 import styles from './_index.module.scss'
 import axios from "axios";
+import Init from "../components/Layout/Init";
 
 export default function Home({data}) {
     const [open, setOpen] = useState(false);
     const handleOpen = () => setOpen(!open);
-    const json = JSON.parse(data);
+    const json = data !== '' ? JSON.parse(data) : null;
     const title = "개발자 자동 배포 관리 도구";
 
     return (
@@ -32,14 +33,14 @@ export default function Home({data}) {
                             service={'config'}
                         />
                     </Grid>
-                    {json.serviceList.map((service) => (
+                    {json !== null ? json.serviceList.map((service) => (
                         <Grid key={service} item xs={12} md={6} xl={3}>
                             <NodeCard
                                 serviceName={service.name}
                                 description={service.description}
                             />
                         </Grid>
-                    ))}
+                    )) : <Init/>}
                 </Grid>
             </Box>
         </Layout>

@@ -41,7 +41,7 @@ export default function handler(req, res) {
      */
     function fileRead(path) {
         fs.readFile(path, 'utf-8', (err, data) => {
-            if (err !== null) {
+            if (err !== null && query !== 'config') {
                 fs.mkdirSync(`./config/service/${query}`);
                 fs.writeFileSync(path, JSON.stringify(INIT_JSON, null, 2), 'utf-8');
                 fileRead(path);

@@ -89,15 +89,13 @@ const CardHeader = ({
         }, [])*/
 
     return (
-        <Grid container>
+        <Grid container className={styles.ch}>
             <Grid xs={6} md={8} xl={8}>
                 <Typography
                     variant="h5"
                     component="div"
                 >
                     {node}
-                </Typography>
-                <Box sx={{height: 40}}>
                     <Fade
                         in={query === 'progress'}
                         style={{
@@ -105,15 +103,18 @@ const CardHeader = ({
                         }}
                         unmountOnExit
                     >
-                        <CircularProgress/>
+                        <CircularProgress
+                            className={styles.ci}
+                            size={20}
+                        />
                     </Fade>
-                </Box>
+                </Typography>
             </Grid>
             <Grid xs={6} md={4} xl={4}>
                 <Button
                     variant={"contained"}
                     size={"small"}
-                    color={"secondary"}
+                    color={"primary"}
                     onClick={restore}
                     className={styles.btn}
                 >
@@ -122,7 +123,7 @@ const CardHeader = ({
                 <Button
                     variant={"contained"}
                     size={"small"}
-                    color={"warning"}
+                    color={"success"}
                     onClick={healthCheck}
                     className={styles.btn}
                 >
@@ -159,7 +160,8 @@ const CardBody = ({
                       setAlertType,
                       setAlertMessage,
                       query,
-                      setQuery
+                      setQuery,
+                      setShellLog
                   }) => {
     const [action, setAction] = useState();
 
@@ -219,8 +221,12 @@ const CardBody = ({
         modalHandleOpen();
     }
 
+    const tomcatHealthCheck = () => {
+
+    }
+
     return (
-        <Grid container>
+        <Grid container spacing={2}>
             {json.node.map((node, nodeIndex) => (
                 nodeIndex === index ? node.podList.map((pod, podIndex) => (
                     <Grid
@@ -230,7 +236,7 @@ const CardBody = ({
                                 : podIndex === excludePodIndex ? styles.excludeBox : styles.box}
                         >
                             <Grid container>
-                                <Grid xs={12} className={styles.mL}>
+                                <Grid xs={12}>
                                     <div className={styles.podTitle}>
                                         {restore === true ? pod.name : excludeStatus === false ? pod.name
                                             : podIndex === excludePodIndex ? pod.name + " 가 제외되었습니다" : pod.name}
@@ -241,8 +247,8 @@ const CardBody = ({
                                         variant={"contained"}
                                         size={"small"}
                                         color={"error"}
-                                        disabled={restore === true ? false : excludeStatus === false ? false
-                                            : podIndex !== excludePodIndex}
+                                        // disabled={restore === true ? false : excludeStatus === false ? false
+                                        //     : podIndex !== excludePodIndex}
                                         onClick={() => exclude(pod.name)}
                                         className={styles.mL}
                                     >
@@ -300,6 +306,7 @@ const CardBody = ({
                                     setAlertType={setAlertType}
                                     setAlertMessage={setAlertMessage}
                                     handleClickQuery={handleClickQuery}
+                                    setShellLog={setShellLog}
                                 />
                             </Grid>
                         </Box>
@@ -316,7 +323,8 @@ export default function PodCard({
                                     index,
                                     setAlertOpen,
                                     setAlertType,
-                                    setAlertMessage
+                                    setAlertMessage,
+                                    setShellLog
                                 }) {
     const [restore, setRestore] = useState(false);
     const [intervalTimer, setIntervalTimer] = useState(5000); // 5초
@@ -367,6 +375,7 @@ export default function PodCard({
                             setAlertMessage={setAlertMessage}
                             query={query}
                             setQuery={setQuery}
+                            setShellLog={setShellLog}
                         />
                     </CardContent>
                 </Card>
