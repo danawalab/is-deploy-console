@@ -1,13 +1,13 @@
 import fs from "fs";
 import {restore} from "../../../service/api/restore";
 import {agentLog} from "../../../service/api/agentLog";
-import {agentHealthCheck} from "../../../service/api/health";
+import {agentHealthCheck, tomcatHealthCheck} from "../../../service/api/health";
 import {loadBalance} from "../../../service/api/loadbalance";
 import {exclude} from "../../../service/api/exclude";
 import {deploy} from "../../../service/api/deploy";
 import {log} from "../../../service/api/log";
 import {setting} from "../../../service/api/setting";
-import {update} from "../../../service/api/update";
+import {agentUpdate, update} from "../../../service/api/update";
 
 
 /**
@@ -46,6 +46,9 @@ export default function handler(req, res) {
                     agentLog(ip, healthApi, 'GET');
                     agentHealthCheck(req, res, healthApi);
                     break;
+                case 'tomcat-health':
+                    await tomcatHealthCheck(req, res, ip)
+                    break;
                 case 'restore' :
                     const restoreApi = API + '/load-balance/restore';
                     agentLog(ip, restoreApi, 'PUT');
@@ -67,7 +70,7 @@ export default function handler(req, res) {
                     break;
                 case 'log':
                     const line = req.query.line;
-                    const logApi = API + `/logs/tail/n?worker=${pod}&line=${line}`
+                    const logApi = API + `/logs?worker=${pod}&line=${line}`
                     agentLog(ip, logApi, 'GET');
                     log(req, res, logApi);
                     break;
@@ -75,9 +78,13 @@ export default function handler(req, res) {
                     await setting(req, res, ip);
                     break;
                 case 'update':
-                    const updateApi = API + `/update/${req.query.version}`;
-                    agentLog(ip, updateApi, 'PUT');
-                    await update(req, res, updateApi, ip);
+                    if (req.method === 'POST') {
+                        await update(req, res, ip);
+                    } else if (req.method === 'PUT') {
+                        const updateApi = API + `/update/${req.query.version}`;
+                        await agentUpdate(req, res, updateApi);
+                        agentLog(ip, updateApi, 'PUT');
+                    }
                     break;
             }
         }

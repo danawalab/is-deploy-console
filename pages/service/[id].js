@@ -1,7 +1,7 @@
 import * as React from "react";
 import {useState} from "react";
 import SettingsIcon from "@mui/icons-material/Settings";
-import {Box, Divider, Grid, IconButton, TextareaAutosize, Typography} from "@mui/material";
+import {Box, Button, Divider, Grid, IconButton, TextareaAutosize, Typography} from "@mui/material";
 import Layout from "../../components/Layout/Layout";
 import PodCard from "../../components/Pod/PodCard";
 import JsonModal from "../../components/Modal/JsonModal";
@@ -27,6 +27,10 @@ export default function ServiceHome({data}) {
         }
         setAlertOpen(false);
     };
+
+    const logInit = () => {
+        setShellLog('');
+    }
 
     return (
         <Layout title={json.service}>
@@ -82,6 +86,14 @@ export default function ServiceHome({data}) {
                     value={shellLog}
                     className={styles.area}
                 />
+                <Button
+                    variant={"contained"}
+                    color={"success"}
+                    onClick={logInit}
+                    className={styles.btn}
+                >
+                    쉘 로그 초기화
+                </Button>
             </Box>
         </Layout>
     );

@@ -15,7 +15,8 @@ export default function ConfirmModal({
                                          setAlertType,
                                          setAlertMessage,
                                          handleClickQuery,
-                                         setShellLog
+                                         setShellLog,
+                                         setQuery
                                      }) {
 
     const API = '/api/agent/';
@@ -50,16 +51,19 @@ export default function ConfirmModal({
             setAlertOpen(true)
         } else {
             close();
+            setQuery('deployProgress')
             await axios.post(API + '/deploy' + query + `&pod=${pod}&parameters=${parameters}`)
                 .then((resp) => {
                     setAlertMessage(JSON.stringify(resp.data.message));
                     setShellLog(resp.data.output)
                     setAlertType('success');
                     setAlertOpen(true)
+                    setQuery('idle');
                     if (resp.data.error !== undefined) {
                         setAlertMessage(JSON.stringify(resp.data.error));
                         setAlertType('error');
                         setAlertOpen(true)
+                        setQuery('idle');
                     }
                 });
         }

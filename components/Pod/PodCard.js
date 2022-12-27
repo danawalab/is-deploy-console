@@ -1,4 +1,4 @@
-import {Box, Button, Card, CardContent, CircularProgress, Divider, Fade, Typography} from "@mui/material";
+import {Badge, Box, Button, Card, CardContent, CircularProgress, Divider, Fade, Typography} from "@mui/material";
 import Grid from '@mui/material/Unstable_Grid2'
 import styles from "./_podCard.module.scss";
 import * as React from "react";
@@ -8,6 +8,7 @@ import ConfirmModal from "../Modal/ConfirmModal";
 import useInterval from "../../service/useInterval";
 import UpdateModal from "../Modal/UpdateModal";
 import Link from "next/link";
+import {log} from "../../service/api/log";
 
 const API = '/api/agent/'
 
@@ -42,7 +43,7 @@ const CardHeader = ({
     }
 
     const healthCheck = async () => {
-        await axios.get(API + `/health?service=${json.service}&node=${node}`)
+        await axios.get(API + `/health?target=agent&service=${json.service}&node=${node}`)
             .then((resp) => {
                 setAlertMessage(JSON.stringify(resp.data.message));
                 setAlertType('success');
@@ -97,9 +98,9 @@ const CardHeader = ({
                 >
                     {node}
                     <Fade
-                        in={query === 'progress'}
+                        in={query === 'progress' || query === 'deployProgress'}
                         style={{
-                            transitionDelay: query === 'progress' ? '800ms' : '0ms',
+                            transitionDelay: query === 'progress' || query === 'deployProgress' ? '800ms' : '0ms',
                         }}
                         unmountOnExit
                     >
@@ -172,8 +173,15 @@ const CardBody = ({
     const [excludeStatus, setExcludeStatus] = useState(false);
     const [excludePodIndex, setExcludePodIndex] = useState(0);
 
+    const [tomcatIndexLists, setTomcatIndexLists] = useState(new Set());
+
     // 5초마다 Agent 상태 갱신
     useInterval(() => {
+        checkLoadBalanceStatus();
+        tomcatHealthCheck();
+    }, timer)
+
+    const checkLoadBalanceStatus = () => {
         axios.post(API + `/lb?service=${json.service}`, {
             data: json
         }).then((resp) => {
@@ -183,23 +191,29 @@ const CardBody = ({
                         setExcludeStatus(true);
                         setExcludePodIndex(podIndex);
                         changeRestoreFalse();
-                        setQuery('idle');
+                        if (query === 'progress') {
+                            setQuery('idle');
+                        }
                     } else if (resp.data[nodeIndex].error !== undefined) {
                         const error = JSON.stringify(resp.data[nodeIndex].error);
                         setAlertMessage(node.name + " is " + error);
                         setAlertType('error');
-                        setAlertOpen(true)
-                        setQuery('idle');
+                        setAlertOpen(true);
+                        if (query === 'progress') {
+                            setQuery('idle');
+                        }
                     } else if (resp.data[nodeIndex].name === 'Error') {
                         setAlertMessage(node.name + " 에이전트가 연결이 안 됐습니다");
                         setAlertType('error');
-                        setAlertOpen(true)
-                        setQuery('idle');
+                        setAlertOpen(true);
+                        if (query === 'progress') {
+                            setQuery('idle');
+                        }
                     }
                 }) : null
             });
         });
-    }, timer)
+    }
 
     const handleClickQuery = () => {
         if (query !== 'idle') {
@@ -222,7 +236,20 @@ const CardBody = ({
     }
 
     const tomcatHealthCheck = () => {
-
+        axios.post(API + `/tomcat-health?service=${json.service}`, {
+            data: json
+        }).then((resp) => {
+            console.log('fucking javascript ==> ', resp);
+            json.node.map((node, nodeIndex) => {
+                nodeIndex === index ? node.podList.map((pod, podIndex) => {
+                    if (resp.data[podIndex].error !== undefined) {
+                        setTomcatIndexLists(tomcatIndexLists => new Set([...tomcatIndexLists, podIndex]))
+                    } else {
+                        setTomcatIndexLists(tomcatIndexLists => new Set([...tomcatIndexLists].filter(index => index !== podIndex)))
+                    }
+                }) : null
+            });
+        });
     }
 
     return (
@@ -236,10 +263,19 @@ const CardBody = ({
                                 : podIndex === excludePodIndex ? styles.excludeBox : styles.box}
                         >
                             <Grid container>
-                                <Grid xs={12}>
+                                <Grid xs={11}>
                                     <div className={styles.podTitle}>
                                         {restore === true ? pod.name : excludeStatus === false ? pod.name
-                                            : podIndex === excludePodIndex ? pod.name + " 가 제외되었습니다" : pod.name}
+                                            : podIndex === excludePodIndex ? pod.name + " 제외되었습니다" : pod.name}
+                                    </div>
+                                </Grid>
+                                <Grid xs={1}>
+                                    <div className={styles.podTitle}>
+                                        <Badge
+                                            color={tomcatIndexLists.has(podIndex) ? 'error' : 'primary'}
+                                            badgeContent={tomcatIndexLists.has(podIndex) ? 'OFF' : 'ON'}
+                                            className={styles.badge}
+                                        />
                                     </div>
                                 </Grid>
                                 <Grid xs={4}>
@@ -307,6 +343,7 @@ const CardBody = ({
                                     setAlertMessage={setAlertMessage}
                                     handleClickQuery={handleClickQuery}
                                     setShellLog={setShellLog}
+                                    setQuery={setQuery}
                                 />
                             </Grid>
                         </Box>
