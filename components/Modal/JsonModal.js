@@ -18,7 +18,7 @@ export default function JsonModal({
     const handleTextArea = () => setTextAreaOpen(!textAreaOpen);
     const [json, setJson] = useState();
     const API = `/api/${service.toLowerCase()}`;
-    const AGENT_API = `/api/agent/sync?service=${service}`;
+    const AGENT_API = `/api/agent/setting?service=${service}`;
 
     useEffect(() => {
         setJson(data);
