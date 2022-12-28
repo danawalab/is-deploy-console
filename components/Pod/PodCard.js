@@ -1,4 +1,4 @@
-import {Box, Button, Card, CardContent, CircularProgress, Divider, Fade, Typography} from "@mui/material";
+import {Badge, Box, Button, Card, CardContent, CircularProgress, Divider, Fade, Typography} from "@mui/material";
 import Grid from '@mui/material/Unstable_Grid2'
 import styles from "./_podCard.module.scss";
 import * as React from "react";
@@ -8,6 +8,7 @@ import ConfirmModal from "../Modal/ConfirmModal";
 import useInterval from "../../service/useInterval";
 import UpdateModal from "../Modal/UpdateModal";
 import Link from "next/link";
+import {log} from "../../service/api/log";
 
 const API = '/api/agent/'
 
@@ -42,7 +43,7 @@ const CardHeader = ({
     }
 
     const healthCheck = async () => {
-        await axios.get(API + `/health?service=${json.service}&node=${node}`)
+        await axios.get(API + `/health?target=agent&service=${json.service}&node=${node}`)
             .then((resp) => {
                 setAlertMessage(JSON.stringify(resp.data.message));
                 setAlertType('success');
@@ -55,71 +56,37 @@ const CardHeader = ({
             });
     }
 
-    /**
-     *  에이전트 동적 업데이트 및 다운그레이드 기능
-     *  update.sh 불안정 해서 잠시 기능 삭제
-     *  중요 !! 사내에서 사용시 보안 정책 확인 필요
-     *  빌드 파일 깃허브, 깃랩, 미니오등 어디에 올리든 보안정책에 의해 443포트 닫혀 있다면 동작 x
-     */
-    /*    const updateAgent = () => {
-            modalHandleOpen();
-        }
-
-        useEffect(() => {
-            axios.get("/api/update")
-                .then((resp) => {
-                    const version = resp.data;
-
-                    axios.post(API + `/update?service=${json.service}`, {
-                        data: json
-                    }).then((resp) => {
-                        json.node.map((node, nodeIndex) => {
-                            if (nodeIndex === index) {
-                                const agentVersion = resp.data[nodeIndex];
-                                console.log(agentVersion);
-                                if (version !== agentVersion) {
-                                    setAlertMessage('새 버전의 에이전트가 나왔습니다, 업데이트를 권장합니다');
-                                    setAlertType('success');
-                                    setAlertOpen(true)
-                                }
-                            }
-                        })
-                    })
-                })
-        }, [])*/
+    const updateAgent = () => {
+        modalHandleOpen();
+    }
 
     return (
-        <Grid container>
+        <Grid container className={styles.ch}>
             <Grid xs={6} md={8} xl={8}>
                 <Typography
                     variant="h5"
                     component="div"
                 >
                     {node}
+                    <Fade
+                        in={query === 'progress' || query === 'deployProgress'}
+                        style={{
+                            transitionDelay: query === 'progress' || query === 'deployProgress' ? '800ms' : '0ms',
+                        }}
+                        unmountOnExit
+                    >
+                        <CircularProgress
+                            className={styles.ci}
+                            size={20}
+                        />
+                    </Fade>
                 </Typography>
-                <Box sx={{height: 40}}>
-                    {query === 'success' ? (
-                        <Typography>성공!</Typography>
-                    ) : query === 'failed' ? (
-                        <Typography>실패!</Typography>
-                    ) : (
-                        <Fade
-                            in={query === 'progress'}
-                            style={{
-                                transitionDelay: query === 'progress' ? '800ms' : '0ms',
-                            }}
-                            unmountOnExit
-                        >
-                            <CircularProgress/>
-                        </Fade>
-                    )}
-                </Box>
             </Grid>
             <Grid xs={6} md={4} xl={4}>
                 <Button
                     variant={"contained"}
                     size={"small"}
-                    color={"secondary"}
+                    color={"primary"}
                     onClick={restore}
                     className={styles.btn}
                 >
@@ -128,22 +95,21 @@ const CardHeader = ({
                 <Button
                     variant={"contained"}
                     size={"small"}
-                    color={"warning"}
+                    color={"success"}
                     onClick={healthCheck}
                     className={styles.btn}
                 >
                     에이전트 헬스체크
                 </Button>
-                {/*<Button
+                <Button
                     variant={"contained"}
                     size={"small"}
                     color={"primary"}
                     onClick={updateAgent}
-                    // disabled={true}
                     className={styles.btn}
                 >
                     에이전트 업데이트
-                </Button>*/}
+                </Button>
                 <UpdateModal
                     open={modalOpen}
                     onClose={modalHandleOpen}
@@ -165,7 +131,8 @@ const CardBody = ({
                       setAlertType,
                       setAlertMessage,
                       query,
-                      setQuery
+                      setQuery,
+                      setShellLog
                   }) => {
     const [action, setAction] = useState();
 
@@ -176,8 +143,15 @@ const CardBody = ({
     const [excludeStatus, setExcludeStatus] = useState(false);
     const [excludePodIndex, setExcludePodIndex] = useState(0);
 
+    const [tomcatIndexLists, setTomcatIndexLists] = useState(new Set());
+
     // 5초마다 Agent 상태 갱신
     useInterval(() => {
+        checkLoadBalanceStatus();
+        tomcatHealthCheck();
+    }, timer)
+
+    const checkLoadBalanceStatus = () => {
         axios.post(API + `/lb?service=${json.service}`, {
             data: json
         }).then((resp) => {
@@ -187,23 +161,29 @@ const CardBody = ({
                         setExcludeStatus(true);
                         setExcludePodIndex(podIndex);
                         changeRestoreFalse();
-                        setQuery('success');
+                        if (query === 'progress') {
+                            setQuery('idle');
+                        }
                     } else if (resp.data[nodeIndex].error !== undefined) {
                         const error = JSON.stringify(resp.data[nodeIndex].error);
                         setAlertMessage(node.name + " is " + error);
                         setAlertType('error');
-                        setAlertOpen(true)
-                        setQuery('failed');
+                        setAlertOpen(true);
+                        if (query === 'progress') {
+                            setQuery('idle');
+                        }
                     } else if (resp.data[nodeIndex].name === 'Error') {
                         setAlertMessage(node.name + " 에이전트가 연결이 안 됐습니다");
                         setAlertType('error');
-                        setAlertOpen(true)
-                        setQuery('failed');
+                        setAlertOpen(true);
+                        if (query === 'progress') {
+                            setQuery('idle');
+                        }
                     }
                 }) : null
             });
         });
-    }, timer)
+    }
 
     const handleClickQuery = () => {
         if (query !== 'idle') {
@@ -225,8 +205,25 @@ const CardBody = ({
         modalHandleOpen();
     }
 
+    const tomcatHealthCheck = () => {
+        axios.post(API + `/tomcat-health?service=${json.service}`, {
+            data: json
+        }).then((resp) => {
+            console.log('fucking javascript ==> ', resp);
+            json.node.map((node, nodeIndex) => {
+                nodeIndex === index ? node.podList.map((pod, podIndex) => {
+                    if (resp.data[podIndex].error !== undefined) {
+                        setTomcatIndexLists(tomcatIndexLists => new Set([...tomcatIndexLists, podIndex]))
+                    } else {
+                        setTomcatIndexLists(tomcatIndexLists => new Set([...tomcatIndexLists].filter(index => index !== podIndex)))
+                    }
+                }) : null
+            });
+        });
+    }
+
     return (
-        <Grid container>
+        <Grid container spacing={2}>
             {json.node.map((node, nodeIndex) => (
                 nodeIndex === index ? node.podList.map((pod, podIndex) => (
                     <Grid
@@ -236,10 +233,19 @@ const CardBody = ({
                                 : podIndex === excludePodIndex ? styles.excludeBox : styles.box}
                         >
                             <Grid container>
-                                <Grid xs={12} className={styles.mL}>
+                                <Grid xs={11}>
                                     <div className={styles.podTitle}>
                                         {restore === true ? pod.name : excludeStatus === false ? pod.name
-                                            : podIndex === excludePodIndex ? pod.name + " Exclude" : pod.name}
+                                            : podIndex === excludePodIndex ? pod.name + " 제외되었습니다" : pod.name}
+                                    </div>
+                                </Grid>
+                                <Grid xs={1}>
+                                    <div className={styles.podTitle}>
+                                        <Badge
+                                            color={tomcatIndexLists.has(podIndex) ? 'error' : 'primary'}
+                                            badgeContent={tomcatIndexLists.has(podIndex) ? 'OFF' : 'ON'}
+                                            className={styles.badge}
+                                        />
                                     </div>
                                 </Grid>
                                 <Grid xs={4}>
@@ -247,8 +253,8 @@ const CardBody = ({
                                         variant={"contained"}
                                         size={"small"}
                                         color={"error"}
-                                        disabled={restore === true ? false : excludeStatus === false ? false
-                                            : podIndex !== excludePodIndex}
+                                        // disabled={restore === true ? false : excludeStatus === false ? false
+                                        //     : podIndex !== excludePodIndex}
                                         onClick={() => exclude(pod.name)}
                                         className={styles.mL}
                                     >
@@ -306,6 +312,8 @@ const CardBody = ({
                                     setAlertType={setAlertType}
                                     setAlertMessage={setAlertMessage}
                                     handleClickQuery={handleClickQuery}
+                                    setShellLog={setShellLog}
+                                    setQuery={setQuery}
                                 />
                             </Grid>
                         </Box>
@@ -322,7 +330,8 @@ export default function PodCard({
                                     index,
                                     setAlertOpen,
                                     setAlertType,
-                                    setAlertMessage
+                                    setAlertMessage,
+                                    setShellLog
                                 }) {
     const [restore, setRestore] = useState(false);
     const [intervalTimer, setIntervalTimer] = useState(5000); // 5초
@@ -373,6 +382,7 @@ export default function PodCard({
                             setAlertMessage={setAlertMessage}
                             query={query}
                             setQuery={setQuery}
+                            setShellLog={setShellLog}
                         />
                     </CardContent>
                 </Card>

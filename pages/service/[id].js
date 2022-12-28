@@ -1,7 +1,7 @@
 import * as React from "react";
 import {useState} from "react";
 import SettingsIcon from "@mui/icons-material/Settings";
-import {Box, Divider, Grid, IconButton} from "@mui/material";
+import {Alert, Box, Button, Divider, Grid, IconButton, TextareaAutosize, Typography} from "@mui/material";
 import Layout from "../../components/Layout/Layout";
 import PodCard from "../../components/Pod/PodCard";
 import JsonModal from "../../components/Modal/JsonModal";
@@ -19,6 +19,8 @@ export default function ServiceHome({data}) {
     const [alertOpen, setAlertOpen] = useState(false);
     const [alertType, setAlertType] = useState('error');
     const [alertMessage, setAlertMessage] = useState('');
+    const [shellLog, setShellLog] = useState('');
+
     const handleClose = (event, reason) => {
         if (reason === 'clickaway') {
             return;
@@ -26,11 +28,16 @@ export default function ServiceHome({data}) {
         setAlertOpen(false);
     };
 
+    const logInit = () => {
+        setShellLog('');
+    }
+
     return (
         <Layout title={json.service}>
             <Box sx={{flexGrow: 1}} className={styles.body}>
                 <Grid container spacing={2} className={styles.serviceGrid}>
                     <Grid item xs={12}>
+                        <Alert severity="info" className={styles.comment}>{json.comment}</Alert>
                         <IconButton
                             className={styles.iconButton}
                             onClick={handleOpen}
@@ -56,6 +63,7 @@ export default function ServiceHome({data}) {
                                 setAlertOpen={setAlertOpen}
                                 setAlertType={setAlertType}
                                 setAlertMessage={setAlertMessage}
+                                setShellLog={setShellLog}
                             />
                         </Grid>
                     )) : <Init/>}
@@ -66,6 +74,22 @@ export default function ServiceHome({data}) {
                     type={alertType}
                     message={alertMessage}
                 />
+                <Divider/>
+                <TextareaAutosize
+                    disabled={true}
+                    minRows={30}
+                    maxRows={40}
+                    value={shellLog}
+                    className={styles.area}
+                />
+                <Button
+                    variant={"contained"}
+                    color={"success"}
+                    onClick={logInit}
+                    className={styles.btn}
+                >
+                    쉘 로그 초기화
+                </Button>
             </Box>
         </Layout>
     );
