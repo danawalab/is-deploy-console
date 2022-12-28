@@ -7,7 +7,7 @@ import {exclude} from "../../../service/api/exclude";
 import {deploy} from "../../../service/api/deploy";
 import {log} from "../../../service/api/log";
 import {setting} from "../../../service/api/setting";
-import {agentUpdate, update} from "../../../service/api/update";
+import {agentUpdate, getAgentVersion} from "../../../service/api/update";
 
 
 /**
@@ -78,8 +78,10 @@ export default function handler(req, res) {
                     await setting(req, res, ip);
                     break;
                 case 'update':
-                    if (req.method === 'POST') {
-                        await update(req, res, ip);
+                    if (req.method === 'GET') {
+                        const updateApi = API + `/update/version`;
+                        await getAgentVersion(req, res, updateApi);
+                        agentLog(ip, updateApi, 'GET');
                     } else if (req.method === 'PUT') {
                         const updateApi = API + `/update/${req.query.version}`;
                         await agentUpdate(req, res, updateApi);

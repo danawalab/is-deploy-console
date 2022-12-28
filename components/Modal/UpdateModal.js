@@ -2,7 +2,8 @@ import * as React from "react";
 import axios from "axios";
 import {Box, Button, Divider, Modal, TextField, Typography} from "@mui/material";
 import styles from "./_modal.module.scss";
-import {useState} from "react";
+import {useEffect, useState} from "react";
+import Grid from "@mui/material/Unstable_Grid2";
 
 export default function UpdateModal({
                                         open,
@@ -13,19 +14,32 @@ export default function UpdateModal({
 
     const API = '/api/agent/';
     const query = `?service=${service}&node=${node}`;
-    // const REGEX = '/([1-9]).([0-9]|[1-9][0-9]).([0-9])/'; //버전 정규식
 
     const [version, setVersion] = useState('');
+    const [agentVersion, setAgentVersion] = useState('');
+    const [latestVersion, setLatestVersion] = useState('');
+
+    useEffect(() => {
+        axios.get("/api/update")
+            .then((resp) => {
+                setLatestVersion(resp.data)
+            });
+
+        axios.get(`${API}/update${query}`)
+            .then((resp) => {
+                setAgentVersion(resp.data.message);
+            })
+    }, [query])
 
     const changeVersion = (e) => {
         setVersion(e.target.value);
     }
 
     const update = () => {
-        axios.put(API + '/update' + query + "&version=" + version)
+        close();
+        axios.put(`${API}/update${query}&version=${version}`)
             .then((resp) => {
             });
-        close();
     }
 
     const close = () => {
@@ -43,7 +57,22 @@ export default function UpdateModal({
             >
                 <Box className={styles.box}>
                     <Typography className={styles.title}>
-                        정말 {node}의 에이전트를 업데이트/롤백 하시겠습니까?
+                        {node}의 에이전트를 업데이트/롤백 하시겠습니까?
+                    </Typography>
+                    {/*{agentVersion === latestVersion ? '최신버전입니다.' : '업데이트가 존재합니다'}*/}
+                    <Grid container>
+                        <Grid xs={6}>
+                            <div className={styles.version}>
+                                {`설치된 에이전트 버전: ${agentVersion}`}
+                            </div>
+                        </Grid>
+                        <Grid xs={6}>
+                            <div className={styles.version}>
+                                {`에이전트 최신 버전: ${latestVersion}`}
+                            </div>
+                        </Grid>
+                    </Grid>
+                    <Typography className={styles.version}>
                     </Typography>
                     <TextField
                         id={"outlined-basic"}

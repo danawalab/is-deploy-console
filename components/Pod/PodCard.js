@@ -56,38 +56,9 @@ const CardHeader = ({
             });
     }
 
-    /**
-     *  에이전트 동적 업데이트 및 다운그레이드 기능
-     *  update.sh 불안정 해서 잠시 기능 삭제
-     *  중요 !! 사내에서 사용시 보안 정책 확인 필요
-     *  빌드 파일 깃허브, 깃랩, 미니오등 어디에 올리든 보안정책에 의해 443포트 닫혀 있다면 동작 x
-     */
-    /*    const updateAgent = () => {
-            modalHandleOpen();
-        }
-
-        useEffect(() => {
-            axios.get("/api/update")
-                .then((resp) => {
-                    const version = resp.data;
-
-                    axios.post(API + `/update?service=${json.service}`, {
-                        data: json
-                    }).then((resp) => {
-                        json.node.map((node, nodeIndex) => {
-                            if (nodeIndex === index) {
-                                const agentVersion = resp.data[nodeIndex];
-                                console.log(agentVersion);
-                                if (version !== agentVersion) {
-                                    setAlertMessage('새 버전의 에이전트가 나왔습니다, 업데이트를 권장합니다');
-                                    setAlertType('success');
-                                    setAlertOpen(true)
-                                }
-                            }
-                        })
-                    })
-                })
-        }, [])*/
+    const updateAgent = () => {
+        modalHandleOpen();
+    }
 
     return (
         <Grid container className={styles.ch}>
@@ -130,16 +101,15 @@ const CardHeader = ({
                 >
                     에이전트 헬스체크
                 </Button>
-                {/*<Button
+                <Button
                     variant={"contained"}
                     size={"small"}
                     color={"primary"}
                     onClick={updateAgent}
-                    // disabled={true}
                     className={styles.btn}
                 >
                     에이전트 업데이트
-                </Button>*/}
+                </Button>
                 <UpdateModal
                     open={modalOpen}
                     onClose={modalHandleOpen}
