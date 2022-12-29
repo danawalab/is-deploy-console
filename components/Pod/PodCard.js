@@ -8,7 +8,6 @@ import ConfirmModal from "../Modal/ConfirmModal";
 import useInterval from "../../service/useInterval";
 import UpdateModal from "../Modal/UpdateModal";
 import Link from "next/link";
-import {log} from "../../service/api/log";
 
 const API = '/api/agent/'
 
@@ -209,7 +208,6 @@ const CardBody = ({
         axios.post(API + `/tomcat-health?service=${json.service}`, {
             data: json
         }).then((resp) => {
-            console.log('fucking javascript ==> ', resp);
             json.node.map((node, nodeIndex) => {
                 nodeIndex === index ? node.podList.map((pod, podIndex) => {
                     if (resp.data[podIndex].error !== undefined) {
