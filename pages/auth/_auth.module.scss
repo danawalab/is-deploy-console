@@ -1,0 +1,36 @@
+.box {
+  background-color: white;
+  border: 2px black solid;
+  min-width: 30%;
+  max-width: 30%;
+  min-height: 400px;
+  max-height: 400px;
+  margin: 15% 35%;
+  box-shadow: 0 8px 40px -12px rgba(0, 0, 0, 0.3);
+
+  &:hover {
+    box-shadow: 0 16px 70px -12.125px rgba(0, 0, 0, 0.3)
+  }
+}
+
+.title {
+  margin-top: 5%;
+  text-align: center;
+}
+
+.id {
+  margin-top: 5%;
+  margin-left: 10%;
+  margin-right: 10%;
+}
+
+.pwd {
+  margin-left: 10%;
+  margin-right: 10%;
+}
+
+.btn {
+  margin-top: 5%;
+  margin-left: 10%;
+  margin-right: 10%;
+}

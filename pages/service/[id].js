@@ -8,7 +8,7 @@ import JsonModal from "../../components/Modal/JsonModal";
 import Init from "../../components/Layout/Init";
 import axios from "axios";
 import styles from "../_index.module.scss";
-import CustomAlert from "../../components/alert/CustomAlert";
+import CustomAlert from "../../components/Alert/CustomAlert";
 
 export default function ServiceHome({data}) {
     const [open, setOpen] = useState(false);
