@@ -1,0 +1,37 @@
+version: '3'
+
+services:
+  is-deploy-console:
+    container_name: is-deploy-console
+    image: ghcr.io/danawalab/is-deploy-console:latest
+    restart: always
+    ports:
+      - "3000:3000"
+    volumes:
+      - /home/is-deploy-console:/home/is-deploy-console/config
+  mongodb:
+    container_name: mongodb
+    image: mongo:6.0.3
+    restart: always
+    ports:
+      - "27017:27017"
+    volumes:
+      - /home/db:/data/db
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=console
+      - MONGO_INITDB_ROOT_PASSWORD=console
+  mongo-express:
+    container_name: mongo-express
+    image: mongo-express:1.0.0-alpha
+    restart: always
+    ports:
+      - "8081:8081"
+    environment:
+      - ME_CONFIG_MONGODB_SERVER=mongodb
+      - ME_CONFIG_MONGODB_PORT=27017
+      - ME_CONFIG_MONGODB_ADMINUSERNAME=console
+      - ME_CONFIG_MONGODB_ADMINPASSWORD=console
+      - ME_CONFIG_BASICAUTH_USERNAME=console
+      - ME_CONFIG_BASICAUTH_PASSWORD=console
+    depends_on:
+      - mongodb
